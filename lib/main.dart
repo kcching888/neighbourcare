@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'services/auth_service.dart';
 import 'pages/auth_gate.dart';
+import 'pages/weather_forum_page.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +36,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const AuthGate(),
+      //home: const AuthGate(),
+      home: const WeatherForumPage(),
     );
   }
 }

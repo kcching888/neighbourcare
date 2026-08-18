@@ -4,9 +4,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/auth_service.dart';
 import 'provider_signup_page.dart';
+import 'provider_portal_page.dart';
+import 'services_booking_page.dart';
+import 'client_signup_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final bool openProviderPortal;
+
+  const LoginPage({
+    super.key,
+    this.openProviderPortal = false,
+  });
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -15,6 +23,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final fullNameController = TextEditingController();
+  final phoneController = TextEditingController();
 
   bool loading = false;
   bool hidePassword = true;
@@ -24,12 +34,12 @@ class _LoginPageState extends State<LoginPage> {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        message = 'Enter both email and password.';
-      });
-      return;
-    }
+  if (email.isEmpty || password.isEmpty) {
+    setState(() {
+      message = 'Enter both email and password.';
+    });
+    return;
+  }
 
     setState(() {
       loading = true;
@@ -38,8 +48,20 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final authService = context.read<AuthService>();
+
       await authService.signIn(email: email, password: password);
-      // AuthGate will react to the signed-in event.
+
+      if (!mounted) return;
+
+      final destination = widget.openProviderPortal
+        ? const ProviderPortalPage()
+        : const ServicesBookingPage();
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => destination),
+        (route) => false,
+    );
     } on AuthException catch (error) {
       if (!mounted) return;
       setState(() {
@@ -59,77 +81,85 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> signUp() async {
-    final rawEmail = emailController.text;
-     final email = rawEmail.trim();
-    final password = passwordController.text;
 
-    debugPrint('SignUp: rawEmail="$rawEmail" trimmed="$email"');
+Future<void> signUp() async {
+  final fullName = fullNameController.text.trim();
+  final phone = phoneController.text.trim();
+  final rawEmail = emailController.text;
+  final email = rawEmail.trim();
+  final password = passwordController.text;
 
+  debugPrint('SignUp: rawEmail="$rawEmail" trimmed="$email"');
 
-    if (email.isEmpty || password.isEmpty) {
+  if (fullName.isEmpty || phone.isEmpty || email.isEmpty || password.isEmpty) {
+    setState(() {
+      message = 'Enter your full name, phone number, email, and password.';
+    });
+    return;
+  }
+
+  if (password.length < 6) {
+    setState(() {
+      message = 'Password must contain at least 6 characters.';
+    });
+    return;
+  }
+
+  setState(() {
+    loading = true;
+    message = '';
+  });
+
+  try {
+    final response = await Supabase.instance.client.auth.signUp(
+      email: email,
+      password: password,
+      emailRedirectTo: 'http://localhost:32277',
+      data: {
+        'full_name': fullName,
+        'phone': phone,
+      },
+    );
+
+    if (!mounted) return;
+
+    if (response.session == null) {
       setState(() {
-        message = 'Enter an email and password to create an account.';
+        message =
+            'Account created. Check your email to confirm your account, '
+            'then sign in.';
       });
-      return;
-    }
-
-    if (password.length < 6) {
+    } else {
       setState(() {
-        message = 'Password must contain at least 6 characters.';
+        message = 'Account created and signed in.';
       });
-      return;
     }
+  } on AuthException catch (error) {
+    if (!mounted) return;
+
+    debugPrint(
+      'SignUp error: ${error.message}, '
+      'status=${error.statusCode}, code=${error.code}',
+    );
 
     setState(() {
-      loading = true;
-      message = '';
+      message = error.message;
     });
+  } catch (error) {
+    if (!mounted) return;
 
-    try {
-      final response = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        emailRedirectTo: 'http://localhost:32277',
-      );
-
-      if (!mounted) return;
-
-      if (response.session == null) {
-        setState(() {
-          message =
-              'Account created. Check your email to confirm your account, '
-              'then sign in.';
-        });
-      } else {
-        setState(() {
-          message = 'Account created and signed in.';
-        });
-      }
-    } on AuthException catch (error) {
-      if (!mounted) return;
-
-      debugPrint(
-        'SignUp error: ${error.message}, '
-        'status=${error.statusCode}, code=${error.code}',
-      );
-      
+    setState(() {
+      message = 'Could not create account:\n$error';
+    });
+  } finally {
+    if (mounted) {
       setState(() {
-        message = error.message;
+        loading = false;
       });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        message = 'Could not create account:\n$error';
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          loading = false;
-        });
-      }
     }
   }
+}
+
 
 Future<void> resendConfirmationEmail() async {
   final email = emailController.text.trim();
@@ -181,12 +211,12 @@ Future<void> resendConfirmationEmail() async {
   }
 }
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
+@override
+void dispose() {
+  emailController.dispose();
+  passwordController.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -281,8 +311,16 @@ Future<void> resendConfirmationEmail() async {
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton(
-                      onPressed: loading ? null : signUp,
-                      child: const Text('Create test account'),
+                      onPressed: loading
+                        ? null
+                        : () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ClientSignupPage(),
+                                ),
+                           );
+                        },
+                      child: const Text('New to NeighbourCare? Sign up'),
                     ),
                     const SizedBox(height: 10),
                     TextButton.icon(

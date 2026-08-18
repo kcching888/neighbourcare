@@ -4,11 +4,21 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'admin_portal_page.dart';
 import 'login_page.dart';
 import 'provider_portal_page.dart';
+import 'weather_forum_page.dart';
 
 final supabase = Supabase.instance.client;
 
 class ServicesBookingPage extends StatefulWidget {
-  const ServicesBookingPage({super.key});
+  final String? forumPostId;
+  final String? forumPostTitle;
+  final String? forumCategory;
+
+  const ServicesBookingPage({
+    super.key,
+    this.forumPostId,
+    this.forumPostTitle,
+    this.forumCategory,
+  });
 
   @override
   State<ServicesBookingPage> createState() => _ServicesBookingPageState();
@@ -32,12 +42,38 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
   String? _formMessage;
   String? _listMessage;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadMyBookings();
-    _loadRole();
+@override
+void initState() {
+  super.initState();
+
+  if (widget.forumCategory != null) {
+    _categoryController.text = _serviceCategoryFromForum(
+      widget.forumCategory!,
+    );
   }
+
+  if (widget.forumPostTitle != null) {
+    _detailsController.text =
+        'Requested from community post: ${widget.forumPostTitle}\n\n'
+        'Please describe the help needed:';
+  }
+
+  _loadMyBookings();
+  _loadRole();
+}
+
+String _serviceCategoryFromForum(String category) {
+  switch (category) {
+    case 'weather':
+      return 'Weather-related home help';
+    case 'diy':
+      return 'Home repair / DIY help';
+    case 'dining':
+      return 'Other local assistance';
+    default:
+      return 'Home service';
+  }
+}
 
   @override
   void dispose() {
@@ -166,6 +202,7 @@ Future<void> _loadRole() async {
             'provider_id': null,
 
             'service_type': _categoryController.text.trim(),
+            'forum_post_id': widget.forumPostId,
             'status': 'pending',
             'total_amount': 0,
             'location': _locationController.text.trim(),
@@ -266,6 +303,21 @@ Future<void> _loadRole() async {
                   color: Colors.grey.shade700,
                 ),
               ),
+              if (widget.forumPostTitle != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Text(
+                    'This booking started from the community post: '
+                    '${widget.forumPostTitle}',
+                  ),
+              ),
+            ],
               const SizedBox(height: 24),
               TextFormField(
                 controller: _categoryController,
@@ -512,6 +564,18 @@ Future<void> _loadRole() async {
             onPressed: _openProviderPortal,
             icon: const Icon(Icons.engineering),
             tooltip: 'Provider portal',
+          ),
+          IconButton(
+            tooltip: 'Community Forum',
+            icon: const Icon(Icons.forum_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WeatherForumPage(),
+                ),
+              );
+            },
           ),
           IconButton(
             onPressed: _loadingBookings ? null : _loadMyBookings,
