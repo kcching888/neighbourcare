@@ -1,0 +1,18 @@
+{
+  "@@locale": "en",
+  "appName": "NeighbourCare",
+  "home": "Home",
+  "community": "Community",
+  "traffic": "Traffic",
+  "trafficRoadConditions": "Traffic & Road Conditions",
+  "deals": "Deals",
+  "housing": "Housing",
+  "news": "News",
+  "calgaryCommunityHub": "Calgary Community Hub",
+  "heroTitle": "Your Calgary community, all in one place.",
+  "heroSubtitle": "Local news, traffic, savings, housing, and neighbour-led updates.",
+  "showMap": "Show map",
+  "showList": "Show list",
+  "refreshTraffic": "Refresh traffic",
+  "getDirections": "Get directions"
+}
