@@ -1,0 +1,13 @@
+{
+  "@@locale": "zh_Hant",
+  "appName": "NeighbourCare",
+  "home": "首頁",
+  "community": "社區",
+  "traffic": "交通",
+  "deals": "優惠",
+  "housing": "住房",
+  "news": "新聞",
+  "calgaryCommunityHub": "卡加利社區資訊平台",
+  "heroTitle": "卡加利社區生活資訊，一站掌握。",
+  "heroSubtitle": "本地新聞、交通、優惠、住房與鄰里即時動態。"
+}

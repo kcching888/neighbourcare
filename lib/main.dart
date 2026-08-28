@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'services/auth_service.dart';
-import 'pages/auth_gate.dart';
+import 'l10n/app_localizations.dart';
 import 'pages/weather_forum_page.dart';
 import 'pages/discover_calgary_page.dart';
 
+import 'services/auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,12 +35,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NeighbourCare Calgary',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
+        useMaterial3: true,
       ),
+
       //home: const AuthGate(),
       //home: const WeatherForumPage(),
       home: const DiscoverCalgaryPage(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+   //   home: const WeatherForumPage(),
     );
   }
 }
