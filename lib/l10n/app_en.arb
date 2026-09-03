@@ -40,5 +40,18 @@
   "posted": "Posted",
   "requestHelp": "Request help",
   "signInToRequestHelp": "Sign in to request help from a community post.",
-  "communityPost": "Community post"
+  "communityPost": "Community post",
+  "search": "Search",
+  "filter": "Filter",
+  "all": "All",
+  "loading": "Loading...",
+  "submit": "Submit",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "price": "Price",
+  "regularPrice": "Regular price",
+  "expiryDate": "Expiry date",
+  "savings": "Savings",
+  "store": "Store"
 }

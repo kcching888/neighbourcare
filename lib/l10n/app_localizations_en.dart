@@ -133,4 +133,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communityPost => 'Community post';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get regularPrice => 'Regular price';
+
+  @override
+  String get expiryDate => 'Expiry date';
+
+  @override
+  String get savings => 'Savings';
+
+  @override
+  String get store => 'Store';
 }
