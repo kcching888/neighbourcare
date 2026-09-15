@@ -11,16 +11,8 @@ import 'pages/login_page.dart';
 import 'services/auth_service.dart';
 import 'services/locale_provider.dart';
 import 'services/font_size_provider.dart';
-// Note: You no longer need to import top_banner_widget.dart here
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-/* ThemeData(
-  textTheme: GoogleFonts.notoSansTextTheme(
-          Theme.of(context).textTheme,
-        )
-);
-*/
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,8 +42,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localeProvider = Provider.of<LocaleProvider>(context);
-    final fontSizeProvider = Provider.of<FontSizeProvider>(context);
+    // Watching providers ensures MyApp and its builder/ MaterialApp rebuild instantly when locale or font size changes
+    final localeProvider = context.watch<LocaleProvider>();
+    final fontSizeProvider = context.watch<FontSizeProvider>();
+
     return MaterialApp(
       navigatorKey: navigatorKey,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.calgaryCommunityHub,
@@ -65,12 +59,18 @@ class MyApp extends StatelessWidget {
       locale: localeProvider.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      
-      // ✅ CORRECTED: Only wrap the Navigator (child) with MediaQuery scaling.
       builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        final bool isMobile = mediaQuery.size.width < 600;
+        
+        double scale = fontSizeProvider.scaleFactor;
+        if (isMobile && scale < 1.15) {
+          scale = 1.15;
+        }
+
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(fontSizeProvider.scaleFactor),
+          data: mediaQuery.copyWith(
+            textScaler: TextScaler.linear(scale),
           ),
           child: child ?? const SizedBox.shrink(),
         );

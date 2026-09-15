@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/locale_provider.dart';
+import '../services/font_size_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../widgets/top_banner_widget.dart';
@@ -359,8 +362,17 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final fontSizeProvider = Provider.of<FontSizeProvider>(context);
     return Scaffold(
       appBar: TopBannerWidget(
+        fontScale: fontSizeProvider.scaleFactor,
+        onLanguageChanged: (locale) {
+          localeProvider.setLocale(locale);
+        },
+        onFontScaleChanged: (scale) {
+          fontSizeProvider.setScaleFactor(scale);
+        },
         title: AppLocalizations.of(context)!.providerPortalTitle,
         onRefresh: _loading ? null : _loadPortal,
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../services/locale_provider.dart';
+import '../services/font_size_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
@@ -127,11 +129,20 @@ class _ClientProfilePageState extends State<ClientProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final fontSizeProvider = Provider.of<FontSizeProvider>(context);
     final user = Supabase.instance.client.auth.currentUser;
     final goldPoints = context.watch<AuthService>().goldPoint;
 
     return Scaffold(
       appBar: TopBannerWidget(
+        fontScale: fontSizeProvider.scaleFactor,
+        onLanguageChanged: (locale) {
+          localeProvider.setLocale(locale);
+        },
+        onFontScaleChanged: (scale) {
+          fontSizeProvider.setScaleFactor(scale);
+        },
         title: AppLocalizations.of(context)!.neighbourCareCalgaryTitle,
       ),
       body: Center(

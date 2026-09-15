@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/locale_provider.dart';
+import '../services/font_size_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../l10n/app_localizations.dart';
 
@@ -88,8 +91,19 @@ final _categories = const [
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final fontSizeProvider = Provider.of<FontSizeProvider>(context);
     return Scaffold(
-      appBar: TopBannerWidget(title: AppLocalizations.of(context)!.reportLocalConditionsTitle),
+      appBar: TopBannerWidget(
+        title: AppLocalizations.of(context)!.reportLocalConditionsTitle,
+        fontScale: fontSizeProvider.scaleFactor,
+        onLanguageChanged: (locale) {
+          localeProvider.setLocale(locale);
+        },
+        onFontScaleChanged: (scale) {
+          fontSizeProvider.setScaleFactor(scale);
+        },
+      ),
       body: SafeArea(
         child: Form(
           key: _formKey,

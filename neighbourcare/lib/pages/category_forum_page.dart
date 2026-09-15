@@ -7,6 +7,8 @@ import 'package:xml/xml.dart' as xml;
 import '../l10n/app_localizations.dart';
 
 import '../services/auth_service.dart';
+import '../services/locale_provider.dart';
+import '../services/font_size_provider.dart';
 import '../services/weather_service.dart';
 import '../widgets/top_banner_widget.dart';
 import 'login_page.dart';
@@ -29,8 +31,7 @@ class _EnvironmentCanadaWeatherBannerState
   @override
   void initState() {
     super.initState();
-   // _weatherData = _fetchEnvironmentCanadaRSS();
-   _weatherData = WeatherService.fetchEnvironmentCanadaRSS();
+    _weatherData = WeatherService.fetchEnvironmentCanadaRSS();
   }
 
   // Maps text weather descriptions to Material Icons
@@ -52,139 +53,6 @@ class _EnvironmentCanadaWeatherBannerState
       return Icons.cloud;
     }
     return Icons.wb_cloudy;
-  }
-
-  Future<Map<String, dynamic>> _fetchEnvironmentCanadaRSS() async {
-    final url = Uri.parse(
-      'https://dd.weather.gc.ca/today/citypage_weather/AB/02/20260914T025503.085Z_MSC_CitypageWeather_s0000047_en.xml',
-    );
-
-    final response = await http.get(url).timeout(const Duration(seconds: 10));
-
-    if (response.statusCode == 200) {
-      final document = xml.XmlDocument.parse(response.body);
-
-      // 0. Warnings & Watches Parse
-      final List<Map<String, String>> warningsList = [];
-      final warningsNode = document.findAllElements('warnings').firstOrNull;
-      if (warningsNode != null) {
-        for (var event in warningsNode.findAllElements('event')) {
-          final title = event.getAttribute('description') ?? event.findElements('title').firstOrNull?.innerText.trim() ?? 'Weather Alert';
-          final urlStr = event.getAttribute('url') ?? '';
-          if (title.isNotEmpty && !title.toLowerCase().contains('no watches or warnings')) {
-            warningsList.add({
-              'title': title,
-              'url': urlStr,
-            });
-          }
-        }
-      }
-
-      // 1. Current Conditions
-      final current = document.findAllElements('currentConditions').firstOrNull;
-      final temp = current?.findElements('temperature').firstOrNull?.innerText.trim() ?? 'N/A';
-      final humidity = current?.findElements('relativeHumidity').firstOrNull?.innerText.trim() ?? 'N/A';
-      final condition = current?.findElements('condition').firstOrNull?.innerText.trim() ?? 'Cloudy';
-      final visibility = current?.findElements('visibility').firstOrNull?.innerText.trim() ?? 'N/A';
-
-      final pressureNode = current?.findElements('pressure').firstOrNull;
-      final pressureVal = pressureNode?.innerText.trim() ?? 'N/A';
-      final pressureTendency = pressureNode?.getAttribute('tendency') ?? '';
-      final pressureFormatted = pressureVal != 'N/A'
-          ? '$pressureVal kPa${pressureTendency.isNotEmpty ? " ($pressureTendency)" : ""}'
-          : 'N/A';
-
-      final windNode = current?.findElements('wind').firstOrNull;
-      final windSpeed = windNode?.findElements('speed').firstOrNull?.innerText.trim() ?? 'N/A';
-      final windDir = windNode?.findElements('direction').firstOrNull?.innerText.trim() ?? '';
-      final windFormatted = windSpeed != 'N/A'
-          ? (windDir.isNotEmpty ? '$windDir $windSpeed km/h' : '$windSpeed km/h')
-          : 'N/A';
-
-      // 2. Hourly Forecast (24 Hours)
-      final List<Map<String, String>> hourlyList = [];
-      final hourlyGroup = document.findAllElements('hourlyForecastGroup').firstOrNull;
-      if (hourlyGroup != null) {
-        for (var h in hourlyGroup.findElements('hourlyForecast')) {
-          final time = h.getAttribute('dateTimeUTC') ?? '';
-          final conditionText = h.findElements('condition').firstOrNull?.innerText.trim() ?? '';
-          final tempVal = h.findElements('temperature').firstOrNull?.innerText.trim() ?? '';
-          final popVal = h.findElements('lop').firstOrNull?.innerText.trim() ?? '';
-
-          String formattedTime = time;
-          if (time.length >= 12) {
-            formattedTime = '${time.substring(8, 10)}:00';
-          }
-
-          hourlyList.add({
-            'time': formattedTime,
-            'condition': conditionText,
-            'temp': tempVal.isNotEmpty ? '$tempVal°C' : '',
-            'pop': popVal.isNotEmpty && popVal != '0' ? '$popVal%' : '',
-          });
-        }
-      }
-
-      // 3. Multi-Day Forecast Parsing & Grouping by Day
-      final forecastGroup = document.findAllElements('forecastGroup').firstOrNull;
-      final Map<String, Map<String, dynamic>> groupedDays = {};
-
-      if (forecastGroup != null) {
-        final forecasts = forecastGroup.findElements('forecast');
-        for (var f in forecasts) {
-          final period = f.findElements('period').firstOrNull?.getAttribute('textForecastName') ?? '';
-          final summary = f.findElements('textSummary').firstOrNull?.innerText.trim() ?? '';
-          final tempNode = f.findElements('temperatures').firstOrNull?.findElements('temperature').firstOrNull;
-          final targetTemp = tempNode?.innerText.trim() ?? '';
-          final tempClass = tempNode?.getAttribute('class') ?? '';
-          final cloudSummary = f.findElements('cloudSummary').firstOrNull?.innerText.trim() ?? summary;
-
-          if (period.isNotEmpty) {
-            final isNight = period.toLowerCase().contains('night');
-            // Clean weekday name by stripping out "night" and extra spaces
-            String dayKey;
-            final lowerPeriod = period.toLowerCase();
-            if (lowerPeriod == 'today' || lowerPeriod == 'tonight') {
-              dayKey = lowerPeriod;
-            } else if (lowerPeriod.endsWith(' night')) {
-              dayKey = period.substring(0, period.length - 6).trim();
-            } else {
-              dayKey = period.trim();
-            }
-
-            groupedDays.putIfAbsent(dayKey, () => {'day': null, 'night': null});
-
-            final periodData = {
-              'summary': summary,
-              'condition': cloudSummary,
-              'temp': targetTemp.isNotEmpty ? '$targetTemp°C' : '',
-              'tempClass': tempClass,
-            };
-
-            if (isNight) {
-              groupedDays[dayKey]!['night'] = periodData;
-            } else {
-              groupedDays[dayKey]!['day'] = periodData;
-            }
-          }
-        }
-      }
-
-      return {
-        'temp': temp,
-        'humidity': humidity,
-        'wind': windFormatted,
-        'condition': condition,
-        'visibility': visibility != 'N/A' ? '$visibility km' : 'N/A',
-        'pressure': pressureFormatted,
-        'station': 'Calgary Int\'l Airport',
-        'warnings': warningsList,
-        'hourly': hourlyList,
-        'multiDayGrouped': groupedDays.entries.toList(),
-      };
-    }
-
-    throw Exception('Environment Canada feed returned status ${response.statusCode}');
   }
 
   @override
@@ -703,9 +571,19 @@ class CategoryForumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final fontSizeProvider = Provider.of<FontSizeProvider>(context);
+
     return Scaffold(
       appBar: TopBannerWidget(
         title: title,
+        fontScale: fontSizeProvider.scaleFactor,
+        onLanguageChanged: (locale) {
+          localeProvider.setLocale(locale);
+        },
+        onFontScaleChanged: (scale) {
+          fontSizeProvider.setScaleFactor(scale);
+        },
         onSignInPressed: () {
           Navigator.push(
             context,
@@ -756,35 +634,43 @@ class CategoryFeed extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final posts = snapshot.data!;
+        final fetchedPosts = snapshot.data!;
+        final bool isWeatherCategory = category == 'weather';
 
         return ListView.separated(
           padding: const EdgeInsets.all(16),
-          itemCount: posts.length + (category == 'weather' ? 1 : 0),
+          itemCount: fetchedPosts.length + (isWeatherCategory ? 1 : 0),
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             // Place the real-time weather widget at top of weather category feed
-            if (category == 'weather') {
+            if (isWeatherCategory) {
               if (index == 0) {
                 return const EnvironmentCanadaWeatherBanner();
               }
               final postIndex = index - 1;
+              
+              if (fetchedPosts.isEmpty) {
+                return Center(
+                  child: Text(AppLocalizations.of(context)!.noPostsShareFirst),
+                );
+              }
+
               return _PostCard(
-                key: ValueKey(posts[postIndex]['id']),
-                post: posts[postIndex],
+                key: ValueKey(fetchedPosts[postIndex]['id']),
+                post: fetchedPosts[postIndex],
                 showCategoryChip: category == null,
               );
             }
 
-            if (posts.isEmpty) {
+            if (fetchedPosts.isEmpty) {
               return Center(
                 child: Text(AppLocalizations.of(context)!.noPostsShareFirst),
               );
             }
 
             return _PostCard(
-              key: ValueKey(posts[index]['id']),
-              post: posts[index],
+              key: ValueKey(fetchedPosts[index]['id']),
+              post: fetchedPosts[index],
               showCategoryChip: category == null,
             );
           },
@@ -809,62 +695,253 @@ class _PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<_PostCard> {
+  bool _repliesExpanded = false;
+  final _replyController = TextEditingController();
+  bool _sendingReply = false;
+  late final Stream<List<Map<String, dynamic>>> _repliesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _repliesStream = Supabase.instance.client
+        .from('forum_replies')
+        .stream(primaryKey: ['id'])
+        .eq('post_id', widget.post['id'])
+        .order('created_at', ascending: true);
+  }
+
+  @override
+  void dispose() {
+    _replyController.dispose();
+    super.dispose();
+  }
+
+  String _label(String value) {
+    return value
+        .split(' ')
+        .where((word) => word.isNotEmpty)
+        .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+        .join(' ');
+  }
+
+  void _requestHelp() {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.signInToRequestHelp)),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ServicesBookingPage(
+          forumPostId: widget.post['id']?.toString(),
+          forumPostTitle: widget.post['title']?.toString() ?? AppLocalizations.of(context)!.communityPost,
+          forumCategory: widget.post['category']?.toString() ?? 'other',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendReply() async {
+    final content = _replyController.text.trim();
+    if (content.isEmpty) return;
+
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.signInToReply)),
+      );
+      return;
+    }
+
+    setState(() => _sendingReply = true);
+
+    final authService = context.read<AuthService>();
+    final authorLoginName = authService.loginName ?? authService.email ?? AppLocalizations.of(context)!.memberFallback;
+
+    try {
+      await Supabase.instance.client.from('forum_replies').insert({
+        'post_id': widget.post['id'],
+        'author_id': user.id,
+        'author_login_name': authorLoginName,
+        'content': content,
+      });
+      _replyController.clear();
+    } on PostgrestException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotSendReply(error.message))),
+      );
+    } finally {
+      if (mounted) setState(() => _sendingReply = false);
+    }
+  }
+
+  Widget _buildReplies(AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+    final items = snapshot.data ?? const [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 24),
+        if (snapshot.hasError)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              AppLocalizations.of(context)!.couldNotLoadReplies(snapshot.error.toString()),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          )
+        else if (snapshot.connectionState == ConnectionState.waiting && items.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(AppLocalizations.of(context)!.noRepliesYet),
+          )
+        else
+          Column(
+            children: items.map((reply) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      (reply['author_login_name'] ?? AppLocalizations.of(context)!.memberFallback).toString(),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      reply['content'] ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${reply['created_at'] ?? ''}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _replyController,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.writeAReplyHint,
+                  isDense: true,
+                  border: OutlineInputBorder(),
+                ),
+                minLines: 1,
+                maxLines: 3,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: _sendingReply ? null : _sendReply,
+              icon: _sendingReply
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.send),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final post = widget.post;
-    final title = post['title'] ?? '';
-    final content = post['content'] ?? '';
-    final category = post['category'] ?? '';
-    final createdAt = post['created_at'] != null
-        ? DateTime.tryParse(post['created_at'].toString())
-            ?.toLocal()
-            .toString()
-            .split('.')
-            .first
-        : '';
+    final categoryName = (post['category'] ?? 'community').toString().replaceAll('_', ' ');
+    final alertName = (post['alert_type'] ?? categoryName).toString().replaceAll('_', ' ');
 
     return Card(
-      elevation: 1,
-      margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.showCategoryChip && category.isNotEmpty) ...[
-              Chip(
-                label: Text(category.toUpperCase()),
-                visualDensity: VisualDensity.compact,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              const SizedBox(height: 8),
-            ],
-            if (title.isNotEmpty) ...[
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 6),
-            ],
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${_label(alertName)} • ${post['neighbourhood'] ?? 'Calgary'}',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                if (widget.showCategoryChip)
+                  Chip(
+                    label: Text(_label(categoryName)),
+                    visualDensity: VisualDensity.compact,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Text(
-              content,
-              style: Theme.of(context).textTheme.bodyMedium,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
+              post['title'] ?? '',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(post['content'] ?? ''),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.of(context)!.postedOn((post['created_at'] ?? '').toString()),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  createdAt ?? '',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                ),
-              ],
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: _repliesStream,
+              builder: (context, repliesSnapshot) {
+                final replyCount = repliesSnapshot.data?.length ?? 0;
+                final replyLabel = _repliesExpanded
+                    ? AppLocalizations.of(context)!.hideReplies
+                    : AppLocalizations.of(context)!.replyAction;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            setState(() => _repliesExpanded = !_repliesExpanded);
+                          },
+                          icon: Icon(
+                            _repliesExpanded ? Icons.expand_less : Icons.chat_bubble_outline,
+                          ),
+                          label: Text(
+                            replyCount > 0 ? '$replyLabel ($replyCount)' : replyLabel,
+                          ),
+                        ),
+                        const Spacer(),
+                        OutlinedButton.icon(
+                          onPressed: _requestHelp,
+                          icon: const Icon(Icons.volunteer_activism_outlined),
+                          label: Text(AppLocalizations.of(context)!.requestHelp),
+                        ),
+                      ],
+                    ),
+                    if (_repliesExpanded) _buildReplies(repliesSnapshot),
+                  ],
+                );
+              },
             ),
           ],
         ),

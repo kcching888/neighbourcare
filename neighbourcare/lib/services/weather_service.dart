@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
@@ -27,7 +28,6 @@ class WeatherInfo {
     required this.multiDayGrouped,
   });
 
-  // Getter expected by discover_calgary_page.dart
   String get temperature => temp;
 
   factory WeatherInfo.fromMap(Map<String, dynamic> map) {
@@ -39,15 +39,35 @@ class WeatherInfo {
       visibility: map['visibility'] ?? 'N/A',
       pressure: map['pressure'] ?? 'N/A',
       station: map['station'] ?? 'Calgary Int\'l Airport',
-      warnings: List<Map<String, String>>.from(map['warnings'] ?? []),
-      hourly: List<Map<String, String>>.from(map['hourly'] ?? []),
-      multiDayGrouped: List<MapEntry<String, Map<String, dynamic>>>.from(map['multiDayGrouped'] ?? []),
+      warnings: List<Map<String, String>>.from(
+        (map['warnings'] as List<dynamic>? ?? []).map(
+          (e) => Map<String, String>.from(e as Map),
+        ),
+      ),
+      hourly: List<Map<String, String>>.from(
+        (map['hourly'] as List<dynamic>? ?? []).map(
+          (e) => Map<String, String>.from(e as Map),
+        ),
+      ),
+      multiDayGrouped: map['multiDayGrouped'] is List
+          ? List<MapEntry<String, Map<String, dynamic>>>.from(
+              (map['multiDayGrouped'] as List).map((e) {
+                if (e is MapEntry<String, Map<String, dynamic>>) return e;
+                if (e is MapEntry) {
+                  return MapEntry(
+                    e.key.toString(),
+                    Map<String, dynamic>.from(e.value as Map),
+                  );
+                }
+                throw ArgumentError('Invalid multiDayGrouped element');
+              }),
+            )
+          : [],
     );
   }
 }
 
 class WeatherService {
-  // Maps text weather descriptions to Material Icons
   static IconData getWeatherIcon(String conditionText) {
     final text = conditionText.toLowerCase();
     if (text.contains('thunder') || text.contains('storm')) {
@@ -68,16 +88,16 @@ class WeatherService {
     return Icons.wb_cloudy;
   }
 
-  // Instance method expected by discover_calgary_page.dart
-  Future<WeatherInfo> fetchCurrentWeather() async {
-    final rawData = await fetchEnvironmentCanadaRSS();
+  // Accepts language parameter to request correct feed version
+  Future<WeatherInfo> fetchCurrentWeather({String lang = 'en'}) async {
+    final rawData = await fetchEnvironmentCanadaRSS(lang: lang);
     return WeatherInfo.fromMap(rawData);
   }
 
-  // Restored static method expected by category_forum_page.dart
-  static Future<Map<String, dynamic>> fetchEnvironmentCanadaRSS() async {
+  static Future<Map<String, dynamic>> fetchEnvironmentCanadaRSS({String lang = 'en'}) async {
+    // Pass language parameter to your worker proxy if supported (e.g. ?lang=fr)
     final url = Uri.parse(
-      'https://dd.weather.gc.ca/today/citypage_weather/AB/02/20260914T025503.085Z_MSC_CitypageWeather_s0000047_en.xml',
+      'https://nbcare-weather-proxy.kcching888.workers.dev/?lang=$lang',
     );
 
     final response = await http.get(url).timeout(const Duration(seconds: 10));
@@ -92,7 +112,7 @@ class WeatherService {
         for (var event in warningsNode.findAllElements('event')) {
           final title = event.getAttribute('description') ?? event.findElements('title').firstOrNull?.innerText.trim() ?? 'Weather Alert';
           final urlStr = event.getAttribute('url') ?? '';
-          if (title.isNotEmpty && !title.toLowerCase().contains('no watches or warnings')) {
+          if (title.isNotEmpty && !title.toLowerCase().contains('no watches') && !title.toLowerCase().contains('aucun avertissement')) {
             warningsList.add({
               'title': title,
               'url': urlStr,
@@ -154,15 +174,27 @@ class WeatherService {
         final forecasts = forecastGroup.findElements('forecast');
         for (var f in forecasts) {
           final period = f.findElements('period').firstOrNull?.getAttribute('textForecastName') ?? '';
-          final summary = f.findElements('textSummary').firstOrNull?.innerText.trim() ?? '';
+          final summary = f.findElements('textSummary').firstOrNull?.innerText.trim() ?? f.findElements('textSummary').firstOrNull?.innerText.trim() ?? '';
           final tempNode = f.findElements('temperatures').firstOrNull?.findElements('temperature').firstOrNull;
           final targetTemp = tempNode?.innerText.trim() ?? '';
           final tempClass = tempNode?.getAttribute('class') ?? '';
           final cloudSummary = f.findElements('cloudSummary').firstOrNull?.innerText.trim() ?? summary;
 
           if (period.isNotEmpty) {
-            final isNight = period.toLowerCase().contains('night');
-            final dayKey = period.replaceAll(RegExp(r'night', caseSensitive: false), '').trim();
+            final lowerPeriod = period.toLowerCase();
+            final isNight = lowerPeriod.contains('night') || lowerPeriod.contains('nuit');
+
+            // "Tonight" is the night counterpart of "Today" - group it under
+            // the same key, the same way "Monday night" groups with "Monday".
+            final normalizedPeriod = lowerPeriod == 'tonight' ? 'Today' : period;
+
+            // Clean common day/night suffixes across English and French.
+            // Word boundaries (\b) are required here: without them, this
+            // regex would also match the "night" inside the word "Tonight"
+            // itself, turning it into "To".
+            final dayKey = normalizedPeriod
+                .replaceAll(RegExp(r'\b(night|nuit)\b', caseSensitive: false), '')
+                .trim();
 
             groupedDays.putIfAbsent(dayKey, () => {'day': null, 'night': null});
 

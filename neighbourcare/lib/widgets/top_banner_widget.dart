@@ -256,6 +256,7 @@ class TopBannerWidget extends StatelessWidget implements PreferredSizeWidget {
             ];
           },
           onSelected: (value) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
             if (value == 'en') {
               onLanguageChanged?.call(const Locale('en'));
             } else if (value == 'zh_TW') {
@@ -280,6 +281,7 @@ class TopBannerWidget extends StatelessWidget implements PreferredSizeWidget {
               authService.signOut();
               Navigator.of(context).popUntil((route) => route.isFirst);
             }
+          });
           },
         ),
       ],
