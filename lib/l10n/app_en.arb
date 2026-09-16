@@ -1,0 +1,1757 @@
+{
+  "@@locale": "en",
+  "aboutNeighbourCare": "NeighbourCare brings Calgary neighbours closer to useful local information and community resources.",
+  "@aboutNeighbourCare": {
+    "description": ""
+  },
+  "account": "Account",
+  "@account": {
+    "description": ""
+  },
+  "accountCreatedCheckEmail": "Account created. Check your email to confirm your account, then sign in.",
+  "@accountCreatedCheckEmail": {
+    "description": ""
+  },
+  "accountCreatedCheckEmailReturn": "Account created. Check your email to confirm your account, then return here to sign in.",
+  "@accountCreatedCheckEmailReturn": {
+    "description": ""
+  },
+  "accountCreatedSignedIn": "Account created and signed in.",
+  "@accountCreatedSignedIn": {
+    "description": ""
+  },
+  "activeIncidentsCount": "{count, plural, one{{count} active incident} other{{count} active incidents}}",
+  "@activeIncidentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "adminPortalTitle": "Admin Portal",
+  "@adminPortalTitle": {
+    "description": ""
+  },
+  "adminPortalTooltip": "Admin portal",
+  "@adminPortalTooltip": {
+    "description": ""
+  },
+  "alertTypeLabel": "Alert type",
+  "@alertTypeLabel": {
+    "description": ""
+  },
+  "all": "All",
+  "@all": {
+    "description": ""
+  },
+  "amountValue": "Amount: {amount}",
+  "@amountValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "appName": "NeighbourCare",
+  "@appName": {
+    "description": ""
+  },
+  "applicationSubmittedPendingApproval": "Application submitted. An administrator must approve your provider profile before you can claim jobs.",
+  "@applicationSubmittedPendingApproval": {
+    "description": ""
+  },
+  "applyNow": "Apply Now",
+  "@applyNow": {
+    "description": ""
+  },
+  "applyToBecomeProvider": "Apply to become a provider",
+  "@applyToBecomeProvider": {
+    "description": ""
+  },
+  "approveButton": "Approve",
+  "@approveButton": {
+    "description": ""
+  },
+  "assessedValueExplainer": "An assessed value is used for property assessment and tax. It is not the same as a current market sale-price estimate.",
+  "@assessedValueExplainer": {
+    "description": ""
+  },
+  "assessedValueLookupTitle": "City assessed-value lookup",
+  "@assessedValueLookupTitle": {
+    "description": ""
+  },
+  "assignButton": "Assign",
+  "@assignButton": {
+    "description": ""
+  },
+  "backToSignIn": "Back to sign in",
+  "@backToSignIn": {
+    "description": ""
+  },
+  "becomeAProviderTitle": "Become a Provider",
+  "@becomeAProviderTitle": {
+    "description": ""
+  },
+  "bestDealsThisWeek": "Best deals this week",
+  "@bestDealsThisWeek": {
+    "description": ""
+  },
+  "bookAHomeService": "Book a home service",
+  "@bookAHomeService": {
+    "description": ""
+  },
+  "bookServices": "Book services",
+  "@bookServices": {
+    "description": ""
+  },
+  "bookingAssignedToProvider": "Booking assigned to provider.",
+  "@bookingAssignedToProvider": {
+    "description": ""
+  },
+  "bookingStartedFromPost": "This booking started from the community post: {title}",
+  "@bookingStartedFromPost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingStatusUpdated": "Booking status updated to {status}.",
+  "@bookingStatusUpdated": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingSubmittedSuccess": "Booking submitted successfully.\\nBooking ID: {id}",
+  "@bookingSubmittedSuccess": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingsTitle": "Bookings",
+  "@bookingsTitle": {
+    "description": ""
+  },
+  "browseGroceryDeals": "Browse grocery deals",
+  "@browseGroceryDeals": {
+    "description": ""
+  },
+  "browseOpenings": "Browse openings",
+  "@browseOpenings": {
+    "description": ""
+  },
+  "calgary": "Calgary",
+  "@calgary": {
+    "description": ""
+  },
+  "calgaryAlberta": "CALGARY, ALBERTA",
+  "@calgaryAlberta": {
+    "description": ""
+  },
+  "calgaryCommunityHub": "Calgary Community Hub",
+  "@calgaryCommunityHub": {
+    "description": ""
+  },
+  "calgaryCommunityHubTraffic": "Calgary Community Hub - Traffic",
+  "@calgaryCommunityHubTraffic": {
+    "description": ""
+  },
+  "calgaryHousingInfoTitle": "Calgary housing information",
+  "@calgaryHousingInfoTitle": {
+    "description": ""
+  },
+  "calgaryHousingPortalTitle": "Calgary Housing Portal",
+  "@calgaryHousingPortalTitle": {
+    "description": ""
+  },
+  "calgaryHousingSnapshotTitle": "Calgary housing snapshot",
+  "@calgaryHousingSnapshotTitle": {
+    "description": ""
+  },
+  "calgaryMarketVacancyRateLabel": "Calgary market rental vacancy rate",
+  "@calgaryMarketVacancyRateLabel": {
+    "description": ""
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": ""
+  },
+  "categoryBeef": "Beef",
+  "@categoryBeef": {
+    "description": ""
+  },
+  "categoryBreakfast": "Breakfast",
+  "@categoryBreakfast": {
+    "description": ""
+  },
+  "categoryChicken": "Chicken",
+  "@categoryChicken": {
+    "description": ""
+  },
+  "categoryDairy": "Dairy",
+  "@categoryDairy": {
+    "description": ""
+  },
+  "categoryFish": "Fish",
+  "@categoryFish": {
+    "description": ""
+  },
+  "categoryOther": "Other",
+  "@categoryOther": {
+    "description": ""
+  },
+  "categoryPork": "Pork",
+  "@categoryPork": {
+    "description": ""
+  },
+  "categoryPostsCount": "{count, plural, one{{count} post} other{{count} posts}}",
+  "@categoryPostsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "chooseTopicToPost": "Choose a topic to post",
+  "@chooseTopicToPost": {
+    "description": ""
+  },
+  "citywideMedianPriceNote": "These are citywide median sale-price changes by building type. They are not individual-property valuations.",
+  "@citywideMedianPriceNote": {
+    "description": ""
+  },
+  "claimJobButton": "Claim job",
+  "@claimJobButton": {
+    "description": ""
+  },
+  "claimUnassignedSubtitle": "Claim an unassigned request. The first successful claim wins.",
+  "@claimUnassignedSubtitle": {
+    "description": ""
+  },
+  "claimingEllipsis": "Claiming...",
+  "@claimingEllipsis": {
+    "description": ""
+  },
+  "clientSignIn": "Client sign in",
+  "@clientSignIn": {
+    "description": ""
+  },
+  "community": "Community",
+  "@community": {
+    "description": ""
+  },
+  "communityFeeds": "Community Feeds",
+  "@communityFeeds": {
+    "description": ""
+  },
+  "communityForumTooltip": "Community Forum",
+  "@communityForumTooltip": {
+    "description": ""
+  },
+  "communityPost": "Community post",
+  "@communityPost": {
+    "description": ""
+  },
+  "completeButton": "Complete",
+  "@completeButton": {
+    "description": ""
+  },
+  "confirmPasswordLabel": "Confirm password",
+  "@confirmPasswordLabel": {
+    "description": ""
+  },
+  "confirmationEmailResent": "A new confirmation email has been sent. Use only the newest link, and open it once.",
+  "@confirmationEmailResent": {
+    "description": ""
+  },
+  "couldNotAssignProvider": "Could not assign provider: {error}",
+  "@couldNotAssignProvider": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotClaimJob": "Could not claim job: {error}",
+  "@couldNotClaimJob": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotCreateAccount": "Could not create account: {error}",
+  "@couldNotCreateAccount": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLaunchUrl": "Could not launch {url}",
+  "@couldNotLaunchUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadAdminData": "Could not load admin data: {error}",
+  "@couldNotLoadAdminData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadBookings": "Could not load bookings: {error}",
+  "@couldNotLoadBookings": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadJobs": "Could not load jobs.",
+  "@couldNotLoadJobs": {
+    "description": ""
+  },
+  "couldNotLoadNotifications": "Could not load notifications: {error}",
+  "@couldNotLoadNotifications": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadPosts": "Could not load posts",
+  "@couldNotLoadPosts": {
+    "description": ""
+  },
+  "couldNotLoadPostsError": "Could not load posts: {error}",
+  "@couldNotLoadPostsError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadProfile": "Could not load profile: {error}",
+  "@couldNotLoadProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadProviderPortal": "Could not load Provider Portal: {error}",
+  "@couldNotLoadProviderPortal": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadReplies": "Could not load replies: {error}",
+  "@couldNotLoadReplies": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotMarkAsRead": "Could not mark as read: {error}",
+  "@couldNotMarkAsRead": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenDirections": "Could not open directions.",
+  "@couldNotOpenDirections": {
+    "description": ""
+  },
+  "couldNotOpenTrafficReport": "Could not open the official Calgary traffic report.",
+  "@couldNotOpenTrafficReport": {
+    "description": ""
+  },
+  "couldNotPublish": "Could not publish: {error}",
+  "@couldNotPublish": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotResendConfirmation": "Could not resend confirmation email: {error}",
+  "@couldNotResendConfirmation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSaveLoginName": "Could not save login name: {error}",
+  "@couldNotSaveLoginName": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSendReply": "Could not send reply: {error}",
+  "@couldNotSendReply": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSignOut": "Could not sign out: {error}",
+  "@couldNotSignOut": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSubmitApplication": "Could not submit provider application: {error}",
+  "@couldNotSubmitApplication": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSubmitBooking": "Could not submit booking: {error}",
+  "@couldNotSubmitBooking": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotUpdateBookingStatus": "Could not update booking status: {error}",
+  "@couldNotUpdateBookingStatus": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotUpdateJobStatus": "Could not update job status: {error}",
+  "@couldNotUpdateJobStatus": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotUpdateProfile": "Could not update profile: {error}",
+  "@couldNotUpdateProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotUpdateProviderVerification": "Could not update provider verification: {error}",
+  "@couldNotUpdateProviderVerification": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotVerifyRole": "Could not verify account role: {error}",
+  "@couldNotVerifyRole": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccountTitle": "Create account",
+  "@createAccountTitle": {
+    "description": ""
+  },
+  "createClientAccountSubtitle": "Create a client account to book trusted local services.",
+  "@createClientAccountSubtitle": {
+    "description": ""
+  },
+  "createPost": "Create post",
+  "@createPost": {
+    "description": ""
+  },
+  "creatingAccountEllipsis": "Creating account...",
+  "@creatingAccountEllipsis": {
+    "description": ""
+  },
+  "currentIncidentsShown": "{count, plural, one{{count} current incident shown.} other{{count} current incidents shown.}}",
+  "@currentIncidentsShown": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "dataSourcesLabel": "Data sources",
+  "@dataSourcesLabel": {
+    "description": ""
+  },
+  "deals": "Deals",
+  "@deals": {
+    "description": ""
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": ""
+  },
+  "describeIssueHint": "Tell us what needs to be repaired or completed.",
+  "@describeIssueHint": {
+    "description": ""
+  },
+  "describeIssueLabel": "Describe the issue",
+  "@describeIssueLabel": {
+    "description": ""
+  },
+  "describeIssueValidator": "Describe the issue",
+  "@describeIssueValidator": {
+    "description": ""
+  },
+  "describeServiceSubtitle": "Describe the service you need in Calgary.",
+  "@describeServiceSubtitle": {
+    "description": ""
+  },
+  "developmentNearYouTitle": "Development near you",
+  "@developmentNearYouTitle": {
+    "description": ""
+  },
+  "dining": "Dining",
+  "@dining": {
+    "description": ""
+  },
+  "diningPost": "Dining post",
+  "@diningPost": {
+    "description": ""
+  },
+  "diningPostsTitle": "Dining posts",
+  "@diningPostsTitle": {
+    "description": ""
+  },
+  "discussionFallback": "Discussion",
+  "@discussionFallback": {
+    "description": ""
+  },
+  "discussionsCount": "{count, plural, one{{count} discussion} other{{count} discussions}}",
+  "@discussionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "displayNameLabel": "Display name",
+  "@displayNameLabel": {
+    "description": ""
+  },
+  "diyHome": "DIY & Home",
+  "@diyHome": {
+    "description": ""
+  },
+  "diyHomePost": "DIY & Home post",
+  "@diyHomePost": {
+    "description": ""
+  },
+  "diyHomeTitle": "DIY & Home",
+  "@diyHomeTitle": {
+    "description": ""
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": ""
+  },
+  "emailAddressLabel": "Email address",
+  "@emailAddressLabel": {
+    "description": ""
+  },
+  "emailHint": "you@example.com",
+  "@emailHint": {
+    "description": ""
+  },
+  "emailLabel": "Email",
+  "@emailLabel": {
+    "description": ""
+  },
+  "enterAtLeast3Characters": "Enter at least 3 characters.",
+  "@enterAtLeast3Characters": {
+    "description": ""
+  },
+  "enterDisplayName": "Enter a name to display in the app.",
+  "@enterDisplayName": {
+    "description": ""
+  },
+  "enterEmailAddress": "Enter your email address",
+  "@enterEmailAddress": {
+    "description": ""
+  },
+  "enterEmailAndPassword": "Enter both email and password.",
+  "@enterEmailAndPassword": {
+    "description": ""
+  },
+  "enterEmailFirstResend": "Enter the email address first, then resend confirmation.",
+  "@enterEmailFirstResend": {
+    "description": ""
+  },
+  "enterFirstName": "Enter your first name.",
+  "@enterFirstName": {
+    "description": ""
+  },
+  "enterFullName": "Enter your full name",
+  "@enterFullName": {
+    "description": ""
+  },
+  "enterLastName": "Enter your last name.",
+  "@enterLastName": {
+    "description": ""
+  },
+  "enterLocation": "Enter your location",
+  "@enterLocation": {
+    "description": ""
+  },
+  "enterLoginName": "Enter a login name",
+  "@enterLoginName": {
+    "description": ""
+  },
+  "enterNeighbourhood": "Enter a neighbourhood.",
+  "@enterNeighbourhood": {
+    "description": ""
+  },
+  "enterPhoneNumber": "Enter a phone number",
+  "@enterPhoneNumber": {
+    "description": ""
+  },
+  "enterServiceCategory": "Enter a service category",
+  "@enterServiceCategory": {
+    "description": ""
+  },
+  "enterSignupDetails": "Enter your full name, phone number, email, and password.",
+  "@enterSignupDetails": {
+    "description": ""
+  },
+  "enterValidEmailAddress": "Enter a valid email address",
+  "@enterValidEmailAddress": {
+    "description": ""
+  },
+  "enterYourNameHint": "Enter your name",
+  "@enterYourNameHint": {
+    "description": ""
+  },
+  "estimatedAmountValue": "Estimated amount: {amount}",
+  "@estimatedAmountValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "expiryDate": "Expiry date",
+  "@expiryDate": {
+    "description": ""
+  },
+  "exploreNeighbourCare": "Explore NeighbourCare",
+  "@exploreNeighbourCare": {
+    "description": ""
+  },
+  "exploreSubtitle": "Helpful Calgary information, local connections, and everyday resources in one place.",
+  "@exploreSubtitle": {
+    "description": ""
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": ""
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": ""
+  },
+  "filterLabelPrefix": "Filter: ",
+  "@filterLabelPrefix": {
+    "description": ""
+  },
+  "findAssessedValueNote": "Find the City-assessed value for a specific Calgary property.",
+  "@findAssessedValueNote": {
+    "description": ""
+  },
+  "firstNameLabel": "First name",
+  "@firstNameLabel": {
+    "description": ""
+  },
+  "fontSizeLarge": "Large",
+  "@fontSizeLarge": {
+    "description": ""
+  },
+  "fontSizeNormal": "Normal",
+  "@fontSizeNormal": {
+    "description": ""
+  },
+  "fontSizeSmall": "Small",
+  "@fontSizeSmall": {
+    "description": ""
+  },
+  "forceAcceptButton": "Force accept",
+  "@forceAcceptButton": {
+    "description": ""
+  },
+  "forceDeclineButton": "Force decline",
+  "@forceDeclineButton": {
+    "description": ""
+  },
+  "fullNameHint": "Your first and last name",
+  "@fullNameHint": {
+    "description": ""
+  },
+  "fullNameLabel": "Full name",
+  "@fullNameLabel": {
+    "description": ""
+  },
+  "getDirections": "Get directions",
+  "@getDirections": {
+    "description": ""
+  },
+  "groceryDealsCount": "{count, plural, one{{count} grocery deal} other{{count} grocery deals}}",
+  "@groceryDealsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "heroSubtitle": "Local news, traffic, savings, housing, and neighbour-led updates.",
+  "@heroSubtitle": {
+    "description": ""
+  },
+  "heroTitle": "Your Calgary community, all in one place.",
+  "@heroTitle": {
+    "description": ""
+  },
+  "hideReplies": "Hide replies",
+  "@hideReplies": {
+    "description": ""
+  },
+  "home": "Home",
+  "@home": {
+    "description": ""
+  },
+  "homeRepairDiyHelp": "Home repair / DIY help",
+  "@homeRepairDiyHelp": {
+    "description": ""
+  },
+  "homeServiceFallback": "Home service",
+  "@homeServiceFallback": {
+    "description": ""
+  },
+  "housing": "Housing",
+  "@housing": {
+    "description": ""
+  },
+  "housingAndDevelopment": "Housing and Development",
+  "@housingAndDevelopment": {
+    "description": ""
+  },
+  "housingDataRefreshed": "Housing data refreshed.",
+  "@housingDataRefreshed": {
+    "description": ""
+  },
+  "housingDataSourcesText": "Housing statistics are sourced from City of Calgary housing research and CMHC market information. Property assessments and development details are provided through official City of Calgary tools.",
+  "@housingDataSourcesText": {
+    "description": ""
+  },
+  "housingInfoDescription": "Explore rental-market trends, recent home-price changes, official property assessments, and upcoming development activity.",
+  "@housingInfoDescription": {
+    "description": ""
+  },
+  "housingTypeApartment": "Apartment",
+  "@housingTypeApartment": {
+    "description": ""
+  },
+  "housingTypeDetached": "Detached",
+  "@housingTypeDetached": {
+    "description": ""
+  },
+  "housingTypeRowTownhouse": "Row / townhouse",
+  "@housingTypeRowTownhouse": {
+    "description": ""
+  },
+  "housingTypeSemiDetached": "Semi-detached",
+  "@housingTypeSemiDetached": {
+    "description": ""
+  },
+  "jobAlreadyClaimed": "This job was already claimed by another provider. The list will now refresh.",
+  "@jobAlreadyClaimed": {
+    "description": ""
+  },
+  "jobClaimedSuccess": "Job claimed successfully.",
+  "@jobClaimedSuccess": {
+    "description": ""
+  },
+  "jobListings": "Job Listings",
+  "@jobListings": {
+    "description": ""
+  },
+  "jobOpeningsCount": "{count, plural, one{{count} opening} other{{count} openings}}",
+  "@jobOpeningsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "jobStatusChanged": "Job status changed to {status}.",
+  "@jobStatusChanged": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "jobs": "Jobs",
+  "@jobs": {
+    "description": ""
+  },
+  "joinConversation": "Join the conversation",
+  "@joinConversation": {
+    "description": ""
+  },
+  "joinNeighbourCare": "Join NeighbourCare",
+  "@joinNeighbourCare": {
+    "description": ""
+  },
+  "lastNameLabel": "Last name",
+  "@lastNameLabel": {
+    "description": ""
+  },
+  "lastRefreshedPrefix": "Last refreshed: {time}",
+  "@lastRefreshedPrefix": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "listLabel": "List",
+  "@listLabel": {
+    "description": ""
+  },
+  "live": "LIVE",
+  "@live": {
+    "description": ""
+  },
+  "liveDealsSubtitle": "Live deals from participating local stores. Pull down to refresh.",
+  "@liveDealsSubtitle": {
+    "description": ""
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": ""
+  },
+  "loadingDeals": "Loading deals...",
+  "@loadingDeals": {
+    "description": ""
+  },
+  "loadingDiscussions": "Loading discussions...",
+  "@loadingDiscussions": {
+    "description": ""
+  },
+  "loadingJobs": "Loading jobs...",
+  "@loadingJobs": {
+    "description": ""
+  },
+  "loadingLiveUpdates": "Loading live updates...",
+  "@loadingLiveUpdates": {
+    "description": ""
+  },
+  "loadingPosts": "Loading posts...",
+  "@loadingPosts": {
+    "description": ""
+  },
+  "loadingTrafficUpdates": "Loading traffic updates...",
+  "@loadingTrafficUpdates": {
+    "description": ""
+  },
+  "localSavings": "Local Savings",
+  "@localSavings": {
+    "description": ""
+  },
+  "localSavingsCouldNotUpdate": "Local Savings could not be updated:\n\n{error}",
+  "@localSavingsCouldNotUpdate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "localUpdateLabel": "Local update",
+  "@localUpdateLabel": {
+    "description": ""
+  },
+  "locationHint": "Neighbourhood or postal code",
+  "@locationHint": {
+    "description": ""
+  },
+  "locationLabel": "Location",
+  "@locationLabel": {
+    "description": ""
+  },
+  "locationRadiusNote": "Location will be optional. When enabled, you can choose 2 km, 5 km, or a default 10 km search radius.",
+  "@locationRadiusNote": {
+    "description": ""
+  },
+  "locationUnavailable": "Location unavailable",
+  "@locationUnavailable": {
+    "description": ""
+  },
+  "locationValue": "Location: {location}",
+  "@locationValue": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "loginNameHint": "How other members will see you",
+  "@loginNameHint": {
+    "description": ""
+  },
+  "loginNameLabel": "Login name",
+  "@loginNameLabel": {
+    "description": ""
+  },
+  "loginNameMinLength": "Login name must be at least 3 characters",
+  "@loginNameMinLength": {
+    "description": ""
+  },
+  "loginNameTaken": "That login name is already taken. Please choose another.",
+  "@loginNameTaken": {
+    "description": ""
+  },
+  "mapLabel": "Map",
+  "@mapLabel": {
+    "description": ""
+  },
+  "markAsReadTooltip": "Mark as read",
+  "@markAsReadTooltip": {
+    "description": ""
+  },
+  "markCompletedButton": "Mark completed",
+  "@markCompletedButton": {
+    "description": ""
+  },
+  "marketMetricsSubtitle": "Market metrics & development permits",
+  "@marketMetricsSubtitle": {
+    "description": ""
+  },
+  "marketPriceTrendsTitle": "Market price trends",
+  "@marketPriceTrendsTitle": {
+    "description": ""
+  },
+  "marketplace": "Marketplace",
+  "@marketplace": {
+    "description": ""
+  },
+  "marketplaceSubtitle": "Buy, sell, and share",
+  "@marketplaceSubtitle": {
+    "description": ""
+  },
+  "medianHomePricesTitle": "Median home prices by building type",
+  "@medianHomePricesTitle": {
+    "description": ""
+  },
+  "memberFallback": "Member",
+  "@memberFallback": {
+    "description": ""
+  },
+  "myAssignedJobsTitle": "My assigned jobs",
+  "@myAssignedJobsTitle": {
+    "description": ""
+  },
+  "myBookings": "My bookings",
+  "@myBookings": {
+    "description": ""
+  },
+  "myProfileTitle": "My profile",
+  "@myProfileTitle": {
+    "description": ""
+  },
+  "neighbourCareCalgaryTitle": "NeighbourCare Calgary",
+  "@neighbourCareCalgaryTitle": {
+    "description": ""
+  },
+  "neighbourCareCommunity": "NeighbourCare Community",
+  "@neighbourCareCommunity": {
+    "description": ""
+  },
+  "neighbourCareServicesTitle": "NeighbourCare Services",
+  "@neighbourCareServicesTitle": {
+    "description": ""
+  },
+  "neighbourhoodExampleHint": "Example: Beltline",
+  "@neighbourhoodExampleHint": {
+    "description": ""
+  },
+  "neighbourhoodHint": "For example: Beltline or Tuscany",
+  "@neighbourhoodHint": {
+    "description": ""
+  },
+  "neighbourhoodLabel": "Neighbourhood",
+  "@neighbourhoodLabel": {
+    "description": ""
+  },
+  "neighbourhoodOptionalLabel": "Calgary neighbourhood (optional)",
+  "@neighbourhoodOptionalLabel": {
+    "description": ""
+  },
+  "newToNeighbourCareSignUp": "New to NeighbourCare? Sign up",
+  "@newToNeighbourCareSignUp": {
+    "description": ""
+  },
+  "newestApplicationsNote": "Newest Calgary-wide applications will appear here first.",
+  "@newestApplicationsNote": {
+    "description": ""
+  },
+  "news": "News",
+  "@news": {
+    "description": ""
+  },
+  "noActiveDealsMatch": "No active deals match this search or category.",
+  "@noActiveDealsMatch": {
+    "description": ""
+  },
+  "noActiveIncidents": "No active incidents",
+  "@noActiveIncidents": {
+    "description": ""
+  },
+  "noActiveIncidentsListed": "No active incidents listed.",
+  "@noActiveIncidentsListed": {
+    "description": ""
+  },
+  "noBookingsYet": "No bookings yet. Submit your first service request.",
+  "@noBookingsYet": {
+    "description": ""
+  },
+  "noClaimedJobsYet": "You have not claimed any jobs yet.",
+  "@noClaimedJobsYet": {
+    "description": ""
+  },
+  "noCommunityPosts": "No community posts yet.",
+  "@noCommunityPosts": {
+    "description": ""
+  },
+  "noCurrentDeals": "No current deals",
+  "@noCurrentDeals": {
+    "description": ""
+  },
+  "noCurrentTrafficIncidents": "No current traffic incidents are listed.",
+  "@noCurrentTrafficIncidents": {
+    "description": ""
+  },
+  "noDealsAvailable": "No deals available right now.",
+  "@noDealsAvailable": {
+    "description": ""
+  },
+  "noEmailAvailable": "No email available",
+  "@noEmailAvailable": {
+    "description": ""
+  },
+  "noJobsFound": "No jobs found.",
+  "@noJobsFound": {
+    "description": ""
+  },
+  "noNotifications": "No notifications.",
+  "@noNotifications": {
+    "description": ""
+  },
+  "noOpenRequests": "No open requests are available right now.",
+  "@noOpenRequests": {
+    "description": ""
+  },
+  "noPostsShareFirst": "No posts yet. Be the first to share.",
+  "@noPostsShareFirst": {
+    "description": ""
+  },
+  "noProviderApplicationsFound": "No provider applications found.",
+  "@noProviderApplicationsFound": {
+    "description": ""
+  },
+  "noProviderProfileLinked": "No provider profile is linked to this account. Create a providers row using this user’s Auth UUID.",
+  "@noProviderProfileLinked": {
+    "description": ""
+  },
+  "noRecentDiscussions": "No recent discussions.",
+  "@noRecentDiscussions": {
+    "description": ""
+  },
+  "noRecentPosts": "No recent posts.",
+  "@noRecentPosts": {
+    "description": ""
+  },
+  "noRepliesYet": "No replies yet.",
+  "@noRepliesYet": {
+    "description": ""
+  },
+  "noVerifiedPriceReductions": "No verified price reductions are active right now.",
+  "@noVerifiedPriceReductions": {
+    "description": ""
+  },
+  "notAvailable": "Not available",
+  "@notAvailable": {
+    "description": ""
+  },
+  "notProvided": "Not provided",
+  "@notProvided": {
+    "description": ""
+  },
+  "notesValue": "Notes: {notes}",
+  "@notesValue": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationFallback": "Notification",
+  "@notificationFallback": {
+    "description": ""
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": ""
+  },
+  "officialSourceLabel": "Official source",
+  "@officialSourceLabel": {
+    "description": ""
+  },
+  "openCalgaryDevelopmentMap": "Open Calgary Development Map",
+  "@openCalgaryDevelopmentMap": {
+    "description": ""
+  },
+  "openCalgaryMyTax": "Open City of Calgary myTax",
+  "@openCalgaryMyTax": {
+    "description": ""
+  },
+  "openCityTrafficReport": "Open City traffic report",
+  "@openCityTrafficReport": {
+    "description": ""
+  },
+  "openRequestsTitle": "Open requests",
+  "@openRequestsTitle": {
+    "description": ""
+  },
+  "optionsTooltip": "Options",
+  "@optionsTooltip": {
+    "description": ""
+  },
+  "otherLocalAssistance": "Other local assistance",
+  "@otherLocalAssistance": {
+    "description": ""
+  },
+  "passwordHelperText": "Use at least 8 characters.",
+  "@passwordHelperText": {
+    "description": ""
+  },
+  "passwordLabel": "Password",
+  "@passwordLabel": {
+    "description": ""
+  },
+  "passwordMinLength": "Password must contain at least 6 characters.",
+  "@passwordMinLength": {
+    "description": ""
+  },
+  "passwordMinLength8": "Password must be at least 8 characters.",
+  "@passwordMinLength8": {
+    "description": ""
+  },
+  "passwordTooShort": "Use at least 8 characters",
+  "@passwordTooShort": {
+    "description": ""
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": ""
+  },
+  "permitFeedComingNext": "Permit feed coming next",
+  "@permitFeedComingNext": {
+    "description": ""
+  },
+  "phoneNumberLabel": "Phone number",
+  "@phoneNumberLabel": {
+    "description": ""
+  },
+  "postFallback": "Post",
+  "@postFallback": {
+    "description": ""
+  },
+  "posted": "Posted",
+  "@posted": {
+    "description": ""
+  },
+  "postedOn": "Posted {date}",
+  "@postedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "preferredTimeHint": "Today 5–7 PM or Saturday morning",
+  "@preferredTimeHint": {
+    "description": ""
+  },
+  "preferredTimeLabel": "Preferred time",
+  "@preferredTimeLabel": {
+    "description": ""
+  },
+  "preferredTimeValue": "Preferred time: {time}",
+  "@preferredTimeValue": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "price": "Price",
+  "@price": {
+    "description": ""
+  },
+  "pricesTermsMayChange": "Prices, stock, membership requirements, and promotion terms may change. Confirm directly with the store before visiting.",
+  "@pricesTermsMayChange": {
+    "description": ""
+  },
+  "privacyReminderText": "Do not include home addresses, faces, licence plates, phone numbers, or other private information.",
+  "@privacyReminderText": {
+    "description": ""
+  },
+  "profileUpdatedSuccess": "Profile updated successfully.",
+  "@profileUpdatedSuccess": {
+    "description": ""
+  },
+  "providerApplicationTitle": "Provider application",
+  "@providerApplicationTitle": {
+    "description": ""
+  },
+  "providerApprovalTitle": "Provider approval",
+  "@providerApprovalTitle": {
+    "description": ""
+  },
+  "providerApprovedSuccess": "Provider approved successfully.",
+  "@providerApprovedSuccess": {
+    "description": ""
+  },
+  "providerIdFallback": "Provider {id}",
+  "@providerIdFallback": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "providerLabelPrefix": "Provider: ",
+  "@providerLabelPrefix": {
+    "description": ""
+  },
+  "providerNotVerified": "Your provider profile is not verified yet. Ask an administrator to set pvsc_verified to true.",
+  "@providerNotVerified": {
+    "description": ""
+  },
+  "providerPortal": "Provider portal",
+  "@providerPortal": {
+    "description": ""
+  },
+  "providerPortalTitle": "Provider Portal",
+  "@providerPortalTitle": {
+    "description": ""
+  },
+  "providerPortalTooltip": "Provider portal",
+  "@providerPortalTooltip": {
+    "description": ""
+  },
+  "providerVerificationRemoved": "Provider verification was removed.",
+  "@providerVerificationRemoved": {
+    "description": ""
+  },
+  "publishReportButton": "Publish report",
+  "@publishReportButton": {
+    "description": ""
+  },
+  "publishingEllipsis": "Publishing…",
+  "@publishingEllipsis": {
+    "description": ""
+  },
+  "rankedByVerifiedSavings": "Ranked by verified percentage saved",
+  "@rankedByVerifiedSavings": {
+    "description": ""
+  },
+  "ratingValue": "rating: {rating}",
+  "@ratingValue": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshBookings": "Refresh bookings",
+  "@refreshBookings": {
+    "description": ""
+  },
+  "refreshTooltip": "Refresh",
+  "@refreshTooltip": {
+    "description": ""
+  },
+  "refreshTraffic": "Refresh traffic",
+  "@refreshTraffic": {
+    "description": ""
+  },
+  "regularPrice": "Regular price",
+  "@regularPrice": {
+    "description": ""
+  },
+  "regularPriceValue": "Regular price ${price}",
+  "@regularPriceValue": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "rentalAvailabilityChangesNote": "Calgary rental availability and recent median home-price changes.",
+  "@rentalAvailabilityChangesNote": {
+    "description": ""
+  },
+  "rentalMarketVacancyRateTitle": "Rental market vacancy rate",
+  "@rentalMarketVacancyRateTitle": {
+    "description": ""
+  },
+  "rentalVacancyRateLabel": "Rental vacancy rate",
+  "@rentalVacancyRateLabel": {
+    "description": ""
+  },
+  "replyAction": "Reply",
+  "@replyAction": {
+    "description": ""
+  },
+  "reportLocalConditionsTitle": "Report local conditions",
+  "@reportLocalConditionsTitle": {
+    "description": ""
+  },
+  "requestHelp": "Request help",
+  "@requestHelp": {
+    "description": ""
+  },
+  "requestedFromCommunityPost": "Requested from community post: {title}\\n\\nPlease describe the help needed:",
+  "@requestedFromCommunityPost": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "resendConfirmationEmail": "Resend confirmation email",
+  "@resendConfirmationEmail": {
+    "description": ""
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": ""
+  },
+  "save": "Save",
+  "@save": {
+    "description": ""
+  },
+  "saveOnGroceriesTitle": "Save on groceries in Calgary",
+  "@saveOnGroceriesTitle": {
+    "description": ""
+  },
+  "saveProfileButton": "Save profile",
+  "@saveProfileButton": {
+    "description": ""
+  },
+  "savingEllipsis": "Saving...",
+  "@savingEllipsis": {
+    "description": ""
+  },
+  "savings": "Savings",
+  "@savings": {
+    "description": ""
+  },
+  "search": "Search",
+  "@search": {
+    "description": ""
+  },
+  "searchByProductOrStore": "Search by product or store",
+  "@searchByProductOrStore": {
+    "description": ""
+  },
+  "serviceCategoryHint": "Plumbing, furnace, snow removal...",
+  "@serviceCategoryHint": {
+    "description": ""
+  },
+  "serviceCategoryLabel": "Service category",
+  "@serviceCategoryLabel": {
+    "description": ""
+  },
+  "serviceFallback": "Service",
+  "@serviceFallback": {
+    "description": ""
+  },
+  "shareAnUpdate": "Share an update",
+  "@shareAnUpdate": {
+    "description": ""
+  },
+  "shareFactualConditionsHint": "Share factual, current conditions.",
+  "@shareFactualConditionsHint": {
+    "description": ""
+  },
+  "shareLocalConditionsWarning": "Share current local conditions. For an immediate emergency, call 911.",
+  "@shareLocalConditionsWarning": {
+    "description": ""
+  },
+  "showList": "Show list",
+  "@showList": {
+    "description": ""
+  },
+  "showMap": "Show map",
+  "@showMap": {
+    "description": ""
+  },
+  "signIn": "Sign in",
+  "@signIn": {
+    "description": ""
+  },
+  "signInAsProvider": "Please sign in as a provider.",
+  "@signInAsProvider": {
+    "description": ""
+  },
+  "signInBeforeBooking": "Please sign in before submitting a booking.",
+  "@signInBeforeBooking": {
+    "description": ""
+  },
+  "signInBeforePosting": "Please sign in before posting.",
+  "@signInBeforePosting": {
+    "description": ""
+  },
+  "signInBeforeUpdatingProfile": "Please sign in before updating your profile.",
+  "@signInBeforeUpdatingProfile": {
+    "description": ""
+  },
+  "signInFailed": "Sign-in failed: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInRequired": "Sign in required",
+  "@signInRequired": {
+    "description": ""
+  },
+  "signInSubtitle": "Sign in to book and manage home services.",
+  "@signInSubtitle": {
+    "description": ""
+  },
+  "signInToCreatePost": "Sign in as a client or provider before creating a community post.",
+  "@signInToCreatePost": {
+    "description": ""
+  },
+  "signInToReply": "Sign in to reply.",
+  "@signInToReply": {
+    "description": ""
+  },
+  "signInToRequestHelp": "Sign in to request help from a community post.",
+  "@signInToRequestHelp": {
+    "description": ""
+  },
+  "signInToViewBookings": "Please sign in to view your bookings.",
+  "@signInToViewBookings": {
+    "description": ""
+  },
+  "signInToViewNotifications": "Please sign in to view notifications.",
+  "@signInToViewNotifications": {
+    "description": ""
+  },
+  "signInToViewProfile": "Please sign in to view your profile.",
+  "@signInToViewProfile": {
+    "description": ""
+  },
+  "signOut": "Sign out",
+  "@signOut": {
+    "description": ""
+  },
+  "signOutTooltip": "Sign out",
+  "@signOutTooltip": {
+    "description": ""
+  },
+  "signedInFallback": "Signed in",
+  "@signedInFallback": {
+    "description": ""
+  },
+  "signedInMember": "Signed-in member",
+  "@signedInMember": {
+    "description": ""
+  },
+  "sourceCalgaryOpenData": "Source: City of Calgary Open Data.",
+  "@sourceCalgaryOpenData": {
+    "description": ""
+  },
+  "startJobButton": "Start job",
+  "@startJobButton": {
+    "description": ""
+  },
+  "statusAccepted": "Accepted",
+  "@statusAccepted": {
+    "description": ""
+  },
+  "statusAssigned": "Assigned",
+  "@statusAssigned": {
+    "description": ""
+  },
+  "statusCancelled": "Cancelled",
+  "@statusCancelled": {
+    "description": ""
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": ""
+  },
+  "statusDeclined": "Declined",
+  "@statusDeclined": {
+    "description": ""
+  },
+  "statusInProgress": "In progress",
+  "@statusInProgress": {
+    "description": ""
+  },
+  "statusPending": "Pending",
+  "@statusPending": {
+    "description": ""
+  },
+  "statusValue": "Status: {status}",
+  "@statusValue": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "store": "Store",
+  "@store": {
+    "description": ""
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": ""
+  },
+  "submitApplicationButton": "Submit application",
+  "@submitApplicationButton": {
+    "description": ""
+  },
+  "submitApplicationSubtitle": "Submit your application for admin approval.",
+  "@submitApplicationSubtitle": {
+    "description": ""
+  },
+  "submitBookingButton": "Submit booking",
+  "@submitBookingButton": {
+    "description": ""
+  },
+  "submittingEllipsis": "Submitting...",
+  "@submittingEllipsis": {
+    "description": ""
+  },
+  "suspendButton": "Suspend",
+  "@suspendButton": {
+    "description": ""
+  },
+  "textSizeLabel": "Text Size",
+  "@textSizeLabel": {
+    "description": ""
+  },
+  "traffic": "Traffic",
+  "@traffic": {
+    "description": ""
+  },
+  "trafficDetailsWarning": "Traffic details can change quickly. Check the City of Calgary report for closures, detours, cameras, and route updates before travelling.",
+  "@trafficDetailsWarning": {
+    "description": ""
+  },
+  "trafficIncidentFallback": "Traffic incident",
+  "@trafficIncidentFallback": {
+    "description": ""
+  },
+  "trafficIncidentReported": "Traffic incident reported.",
+  "@trafficIncidentReported": {
+    "description": ""
+  },
+  "trafficRoadConditions": "Road Conditions",
+  "@trafficRoadConditions": {
+    "description": ""
+  },
+  "trafficSourceNote": "Traffic source: City of Calgary Open Data. Confirm conditions before travelling.",
+  "@trafficSourceNote": {
+    "description": ""
+  },
+  "trafficUpdatesUnavailable": "Traffic updates are unavailable.",
+  "@trafficUpdatesUnavailable": {
+    "description": ""
+  },
+  "tryAgainButton": "Try again",
+  "@tryAgainButton": {
+    "description": ""
+  },
+  "unassigned": "Unassigned",
+  "@unassigned": {
+    "description": ""
+  },
+  "updateTimeUnavailable": "Update time unavailable",
+  "@updateTimeUnavailable": {
+    "description": ""
+  },
+  "updatedPrefix": "Updated: {time}",
+  "@updatedPrefix": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vacancyRate2025Note": "Calgary market vacancy rate in 2025, up from 4.6% in 2024.",
+  "@vacancyRate2025Note": {
+    "description": ""
+  },
+  "vacancyRateExplainer": "A higher vacancy rate can mean more rental options, but availability and rent still vary by neighbourhood and home type.",
+  "@vacancyRateExplainer": {
+    "description": ""
+  },
+  "vacancyRateIncreaseNote": "The market vacancy rate increased from 1.4% in 2023 to 5.1% in 2025.",
+  "@vacancyRateIncreaseNote": {
+    "description": ""
+  },
+  "verifiedLabel": "Verified",
+  "@verifiedLabel": {
+    "description": ""
+  },
+  "viewAllGroceryDeals": "View all grocery deals",
+  "@viewAllGroceryDeals": {
+    "description": ""
+  },
+  "viewCityHousingTrends": "View City housing trends",
+  "@viewCityHousingTrends": {
+    "description": ""
+  },
+  "viewDetails": "View details",
+  "@viewDetails": {
+    "description": ""
+  },
+  "viewLatestStatistics": "View the latest statistics",
+  "@viewLatestStatistics": {
+    "description": ""
+  },
+  "viewModeLabel": "View Mode",
+  "@viewModeLabel": {
+    "description": ""
+  },
+  "weather": "Weather",
+  "@weather": {
+    "description": ""
+  },
+  "weatherRelatedHomeHelp": "Weather-related home help",
+  "@weatherRelatedHomeHelp": {
+    "description": ""
+  },
+  "weatherUpdate": "Weather update",
+  "@weatherUpdate": {
+    "description": ""
+  },
+  "weatherUpdatePublished": "Weather update published.",
+  "@weatherUpdatePublished": {
+    "description": ""
+  },
+  "weatherUpdatesTitle": "Weather updates",
+  "@weatherUpdatesTitle": {
+    "description": ""
+  },
+  "welcomeToNeighbourCare": "Welcome to NeighbourCare",
+  "@welcomeToNeighbourCare": {
+    "description": ""
+  },
+  "whatIsHappeningLabel": "What is happening?",
+  "@whatIsHappeningLabel": {
+    "description": ""
+  },
+  "writeAReplyHint": "Write a reply...",
+  "@writeAReplyHint": {
+    "description": ""
+  },
+  "yourAccountTitle": "Your account",
+  "@yourAccountTitle": {
+    "description": ""
+  },
+  "yoyChangeQ22026": "Year-over-year change, Q2 2026",
+  "@yoyChangeQ22026": {
+    "description": ""
+  },
+
+"updatingWeather": "Updating Weather...",
+  "@updatingWeather": { "description": "Loading text while fetching weather data" },
+
+  "weatherUpdateUnavailable": "Weather update unavailable: {error}",
+  "@weatherUpdateUnavailable": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "weatherAlertIssued": "Weather Alert Issued",
+  "calgaryIntlAirport": "Calgary Int'l Airport",
+
+  "weatherHumidity": "Humidity: {humidity}%",
+  "@weatherHumidity": {
+    "placeholders": { "humidity": { "type": "String" } }
+  },
+
+  "weatherWind": "Wind: {wind}",
+  "@weatherWind": {
+    "placeholders": { "wind": { "type": "String" } }
+  },
+
+  "weatherVisPres": "Vis: {visibility} • Pres: {pressure}",
+  "@weatherVisPres": {
+    "placeholders": {
+      "visibility": { "type": "String" },
+      "pressure": { "type": "String" }
+    }
+  },
+
+  "hideForecast": "Hide Forecast",
+  "showFullForecast": "Show 24-Hr & Multi-Day Forecast",
+  "hourlyForecastTitle": "24-Hour Forecast",
+  "multiDayOutlookTitle": "Multi-Day Outlook",
+
+  "weatherHigh": "High {temp}",
+  "@weatherHigh": {
+    "placeholders": { "temp": { "type": "String" } }
+  },
+
+  "weatherLow": "Low {temp}",
+  "@weatherLow": {
+    "placeholders": { "temp": { "type": "String" } }
+  }
+}
