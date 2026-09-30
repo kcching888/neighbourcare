@@ -65,6 +65,22 @@ class WeatherInfo {
           : [],
     );
   }
+
+  // Add this factory constructor
+  factory WeatherInfo.empty() {
+    return WeatherInfo(
+      temp: '--',
+      humidity: '--',
+      wind: '--',
+      condition: 'Unavailable',
+      visibility: '--',
+      pressure: '--',
+      station: 'N/A',
+      warnings: const [],
+      hourly: const [],
+      multiDayGrouped: const <MapEntry<String, Map<String, dynamic>>>[], // Use empty typed List instead of {}
+    );
+  }
 }
 
 class WeatherService {

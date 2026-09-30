@@ -82,10 +82,10 @@ class _DiscoverCalgaryPageState extends State<DiscoverCalgaryPage> {
       return <LocalDeal>[];
     });
 
-    _weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
-      debugPrint('Weather fetch error in DiscoverPage: $error');
-      return null;
-    });
+_weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
+  debugPrint('Weather fetch error in DiscoverPage: $error');
+  return WeatherInfo.empty(); // Return a valid WeatherInfo object instead of null
+});
   }
 
   Future<void> _refresh() async {

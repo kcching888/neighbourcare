@@ -47,6 +47,7 @@ dependencies:
   fl_chart: ^1.2.0
   google_fonts: ^8.2.1
   xml: ^6.3.0
+  latlong2: ^0.10.1
 
 
 dev_dependencies:
