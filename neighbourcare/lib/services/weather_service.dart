@@ -14,7 +14,7 @@ class WeatherInfo {
   final List<Map<String, String>> warnings;
   final List<Map<String, String>> hourly;
   final List<MapEntry<String, Map<String, dynamic>>> multiDayGrouped;
-
+//
   WeatherInfo({
     required this.temp,
     required this.humidity,
