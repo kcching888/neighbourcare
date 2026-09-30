@@ -28,7 +28,7 @@ class WeatherInfo {
     required this.multiDayGrouped,
   });
 
-
+//
   String get temperature => temp;
 
   factory WeatherInfo.fromMap(Map<String, dynamic> map) {
