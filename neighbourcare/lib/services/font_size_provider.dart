@@ -7,17 +7,18 @@ class FontSizeProvider extends ChangeNotifier {
   double get scaleFactor => _scaleFactor;
 
   /// Call this when the app initializes or on the first build
-  void initForScreenSize(double width) {
-    // Only auto-adjust if the user hasn't manually selected a font scale yet
-    if (!_hasUserSetPreference) {
-      if (width < 600) {
-        _scaleFactor = 1.25; // Default to larger font on mobile
-      } else {
-        _scaleFactor = 1.0;  // Standard font on desktop/tablet
-      }
-      notifyListeners();
+void initForScreenSize(double width) {
+  if (!_hasUserSetPreference) {
+    if (width < 480) {
+      _scaleFactor = 1.40; // 40% boost for compact mobile screens
+    } else if (width < 768) {
+      _scaleFactor = 1.25; // Moderate boost for small tablets / phablets
+    } else {
+      _scaleFactor = 1.0;  // Standard for desktop/tablet landscape
     }
+    notifyListeners();
   }
+}
 
   void setScaleFactor(double newScale) {
     _scaleFactor = newScale;

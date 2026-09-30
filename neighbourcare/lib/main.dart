@@ -47,6 +47,15 @@ class MyApp extends StatelessWidget {
     final localeProvider = context.watch<LocaleProvider>();
     final fontSizeProvider = context.watch<FontSizeProvider>();
 
+
+    /*
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 700;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FontSizeProvider>().initForScreenSize(screenWidth);
+    });
+*/
     return MaterialApp(
       navigatorKey: navigatorKey,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.calgaryCommunityHub,
@@ -78,10 +87,38 @@ class MyApp extends StatelessWidget {
           data: mediaQuery.copyWith(
             textScaler: TextScaler.linear(scale),
           ),
-          child: child ?? const SizedBox.shrink(),
+          child: InitWrapper(child: child ?? const SizedBox.shrink()),
         );
       },
       home: const DiscoverCalgaryPage(),
     );
   }
+}
+
+/// Helper widget to initialize screen-size dependent settings after post-frame binding
+class InitWrapper extends StatefulWidget {
+  final Widget child;
+  const InitWrapper({super.key, required this.child});
+
+  @override
+  State<InitWrapper> createState() => _InitWrapperState();
+}
+
+class _InitWrapperState extends State<InitWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        context.read<FontSizeProvider>().initForScreenSize(screenWidth);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+
 }

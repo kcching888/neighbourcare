@@ -30,6 +30,8 @@ class DiscoverCalgaryPage extends StatefulWidget {
 }
 
 class _DiscoverCalgaryPageState extends State<DiscoverCalgaryPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final _trafficService = TrafficService();
   final _localSavingsService = LocalSavingsService();
   final _weatherService = WeatherService();
@@ -38,37 +40,10 @@ class _DiscoverCalgaryPageState extends State<DiscoverCalgaryPage> {
   late Future<List<LocalDeal>> _dealsFuture;
   late Future<WeatherInfo?> _weatherFuture;
 
- // StreamSubscription<AuthState>? _authSubscription;
-  bool _isProvider = false;
-
-
   @override
   void initState() {
     super.initState();
     _loadFutures();
-
-    // Listen for realtime auth status changes (sign-in, sign-out, token updates)
- //   _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
- //     if (mounted) {
- //       _checkProviderStatus();
-//      }
- //   });
-  }
-
-  //void _checkProviderStatus() {
-  //  final user = Supabase.instance.client.auth.currentUser;
-  //  final isProviderRole = user?.userMetadata?['role'] == 'provider' ||
-  //      user?.userMetadata?['is_provider'] == true;
-
-    //setState(() {
-   //   _isProvider = isProviderRole;
-   // });
- // }
-
-  @override
-  void dispose() {
- //   _authSubscription?.cancel(); // Prevent memory leaks
-    super.dispose();
   }
 
   void _loadFutures() {
@@ -82,10 +57,10 @@ class _DiscoverCalgaryPageState extends State<DiscoverCalgaryPage> {
       return <LocalDeal>[];
     });
 
-_weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
-  debugPrint('Weather fetch error in DiscoverPage: $error');
-  return WeatherInfo.empty(); // Return a valid WeatherInfo object instead of null
-});
+    _weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
+      debugPrint('Weather fetch error in DiscoverPage: $error');
+      return WeatherInfo.empty();
+    });
   }
 
   Future<void> _refresh() async {
@@ -186,27 +161,104 @@ _weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
     final fontSizeProvider = Provider.of<FontSizeProvider>(context);
     final authService = Provider.of<AuthService>(context);
 
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFFF8F7F4),
-      appBar: TopBannerWidget(
-        title: AppLocalizations.of(context)?.calgaryCommunityHub ?? 'NeighbourCare',
-        fontScale: fontSizeProvider.scaleFactor,
-        isProvider: authService.isProvider,
-        onLanguageChanged: (locale) {
-          localeProvider.setLocale(locale);
-        },
-        onFontScaleChanged: (scale) {
-          fontSizeProvider.setScaleFactor(scale);
-        },
-        onRefresh: () {
-          _refresh();
-        },
-        onSignInPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-          );
-        },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Row(
+          children: [
+            if (isMobile)
+              IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
+            Expanded(
+              child: TopBannerWidget(
+                title: AppLocalizations.of(context)?.calgaryCommunityHub ?? 'NeighbourCare',
+                fontScale: fontSizeProvider.scaleFactor,
+                isProvider: authService.isProvider,
+                onLanguageChanged: (locale) {
+                  localeProvider.setLocale(locale);
+                },
+                onFontScaleChanged: (scale) {
+                  fontSizeProvider.setScaleFactor(scale);
+                },
+                onRefresh: () {
+                  _refresh();
+                },
+                onSignInPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
+      drawer: isMobile
+          ? Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: const BoxDecoration(color: Color(0xFF092C4C)),
+                    child: Text(
+                      AppLocalizations.of(context)!.calgaryCommunityHub,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.traffic),
+                    title: Text(AppLocalizations.of(context)!.traffic),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openTrafficPage();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.sell_outlined),
+                    title: Text(AppLocalizations.of(context)!.savings),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openLocalSavingsPage();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.forum_outlined),
+                    title: Text(AppLocalizations.of(context)!.community),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openCommunityPosts();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.home_outlined),
+                    title: Text(AppLocalizations.of(context)!.housing),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openHousingPage();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.work_outline),
+                    title: Text(AppLocalizations.of(context)!.jobs),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openJobsPage();
+                    },
+                  ),
+                ],
+              ),
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder(
@@ -229,53 +281,54 @@ _weatherFuture = _weatherService.fetchCurrentWeather().catchError((error) {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.zero,
                   children: [
-                    Container(
-                      color: const Color(0xFFFFFFFF),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: horizontalPadding,
-                        vertical: 12,
-                      ),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1200),
-                          child: Wrap(
-                            spacing: 24,
-                            runSpacing: 8,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.calgaryCommunityHub,
-                                style: const TextStyle(
-                                  color: Color(0xFF092C4C),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18,
+                    if (!isMobile)
+                      Container(
+                        color: const Color(0xFFFFFFFF),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding,
+                          vertical: 12,
+                        ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1200),
+                            child: Wrap(
+                              spacing: 24,
+                              runSpacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.calgaryCommunityHub,
+                                  style: const TextStyle(
+                                    color: Color(0xFF092C4C),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              _QuickLink(
-                                label: AppLocalizations.of(context)!.traffic,
-                                onTap: _openTrafficPage,
-                              ),
-                              _QuickLink(
-                                label: AppLocalizations.of(context)!.savings,
-                                onTap: _openLocalSavingsPage,
-                              ),
-                              _QuickLink(
-                                label: AppLocalizations.of(context)!.community,
-                                onTap: _openCommunityPosts,
-                              ),
-                              _QuickLink(
-                                label: AppLocalizations.of(context)!.housing,
-                                onTap: _openHousingPage,
-                              ),
-                              _QuickLink(
-                                label: AppLocalizations.of(context)!.jobs,
-                                onTap: _openJobsPage,
-                              ),
-                            ],
+                                _QuickLink(
+                                  label: AppLocalizations.of(context)!.traffic,
+                                  onTap: _openTrafficPage,
+                                ),
+                                _QuickLink(
+                                  label: AppLocalizations.of(context)!.savings,
+                                  onTap: _openLocalSavingsPage,
+                                ),
+                                _QuickLink(
+                                  label: AppLocalizations.of(context)!.community,
+                                  onTap: _openCommunityPosts,
+                                ),
+                                _QuickLink(
+                                  label: AppLocalizations.of(context)!.housing,
+                                  onTap: _openHousingPage,
+                                ),
+                                _QuickLink(
+                                  label: AppLocalizations.of(context)!.jobs,
+                                  onTap: _openJobsPage,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     _HomeHero(
                       onTrafficTap: _openTrafficPage,
                     ),
@@ -626,7 +679,6 @@ class _HubCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Dynamic scaling for title
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
@@ -858,7 +910,6 @@ class _TrafficHubCard extends StatelessWidget {
     );
   }
 }
-
 
 class _LocalSavingsHubCard extends StatelessWidget {
   final List<LocalDeal> deals;
