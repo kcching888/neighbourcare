@@ -27,7 +27,7 @@ class WeatherInfo {
     required this.hourly,
     required this.multiDayGrouped,
   });
-//
+
 
   String get temperature => temp;
 
