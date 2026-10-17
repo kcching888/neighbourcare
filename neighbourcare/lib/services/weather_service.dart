@@ -14,7 +14,7 @@ class WeatherInfo {
   final List<Map<String, String>> warnings;
   final List<Map<String, String>> hourly;
   final List<MapEntry<String, Map<String, dynamic>>> multiDayGrouped;
-//
+
   WeatherInfo({
     required this.temp,
     required this.humidity,
@@ -28,8 +28,22 @@ class WeatherInfo {
     required this.multiDayGrouped,
   });
 
-
   String get temperature => temp;
+
+factory WeatherInfo.empty() {
+  return WeatherInfo(
+    temp: 'N/A',
+    humidity: 'N/A',
+    wind: 'N/A',
+    condition: 'Unavailable',
+    visibility: 'N/A',
+    pressure: 'N/A',
+    station: 'Calgary Int\'l Airport',
+    warnings: [],
+    hourly: [],
+    multiDayGrouped: [],
+  );
+}
 
   factory WeatherInfo.fromMap(Map<String, dynamic> map) {
     return WeatherInfo(
@@ -64,22 +78,6 @@ class WeatherInfo {
               }),
             )
           : [],
-    );
-  }
-
-  // Add this factory constructor
-  factory WeatherInfo.empty() {
-    return WeatherInfo(
-      temp: '--',
-      humidity: '--',
-      wind: '--',
-      condition: 'Unavailable',
-      visibility: '--',
-      pressure: '--',
-      station: 'N/A',
-      warnings: const [],
-      hourly: const [],
-      multiDayGrouped: const <MapEntry<String, Map<String, dynamic>>>[], // Use empty typed List instead of {}
     );
   }
 }

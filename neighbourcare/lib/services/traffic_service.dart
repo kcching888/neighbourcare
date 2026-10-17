@@ -36,10 +36,10 @@ class TrafficIncident {
 }
 
 class TrafficService {
-  // Removed the '&$order=modified_dt%20DESC' parameter to prevent HTTP 400 errors
   static final _endpoint = Uri.parse(
     'https://data.calgary.ca/resource/4jah-h97u.json'
-    '?\$limit=50',
+    '?\$limit=50'
+    '&\$order=modified_dt%20DESC',
   );
 
   Future<List<TrafficIncident>> fetchCurrentIncidents() async {
@@ -60,21 +60,9 @@ class TrafficService {
       );
     }
 
-    final incidents = decoded
+    return decoded
         .whereType<Map<String, dynamic>>()
         .map(TrafficIncident.fromJson)
         .toList();
-
-    // Sort locally in Dart by modifiedDateTime descending (with null safety fallback)
-    incidents.sort((a, b) {
-      final aDate = a.modifiedDateTime ?? a.startDateTime;
-      final bDate = b.modifiedDateTime ?? b.startDateTime;
-      if (aDate == null && bDate == null) return 0;
-      if (aDate == null) return 1;
-      if (bDate == null) return -1;
-      return bDate.compareTo(aDate);
-    });
-
-    return incidents;
   }
 }

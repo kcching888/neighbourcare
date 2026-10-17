@@ -1,18 +1,22 @@
-import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../services/locale_provider.dart';
 import '../services/font_size_provider.dart';
-import '../services/booking_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../widgets/top_banner_widget.dart';
+import '../widgets/multi_file_upload_widget.dart';
+import '../l10n/app_localizations.dart';
 
 import 'admin_portal_page.dart';
 import 'discover_calgary_page.dart';
 import 'provider_portal_page.dart';
 import 'category_forum_page.dart';
-import '../widgets/top_banner_widget.dart';
-import '../l10n/app_localizations.dart';
+
+
 
 final supabase = Supabase.instance.client;
 
@@ -40,6 +44,9 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
   final _detailsController = TextEditingController();
   final _customLocationController = TextEditingController();
 
+  // File attachment list
+  List<PlatformFile> _selectedFiles = [];
+
   // Location dropdown selection
   String? _selectedLocation;
 
@@ -56,7 +63,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     'Other / Custom',
   ];
 
-  // Quick-fill presets for Option 2 (Preferred Time)
+  // Quick-fill presets for Preferred Time
   final List<String> _timePresets = [
     'ASAP',
     'This Weekend',
@@ -71,12 +78,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
   bool _submitting = false;
   bool _checkingRole = true;
   bool _isAdmin = false;
-  bool _isProvider = false;
   bool _isInitialized = false;
-
-  // Attachment state variables
-  String? _uploadedAttachmentUrl;
-  bool _isUploadingAttachment = false;
 
   String? _formMessage;
   bool _isFormError = false;
@@ -109,6 +111,97 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     }
   }
 
+  void _showImagePreview(BuildContext context, String url) {
+  showDialog<void>(
+    context: context,
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            InteractiveViewer(
+              child: Image.network(
+                url,
+                fit: BoxFit.contain,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 30),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildBookingAttachments(List<String> attachments) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 8),
+      SizedBox(
+        height: 70,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: attachments.length,
+          itemBuilder: (context, index) {
+            final url = attachments[index];
+            final isImage = url.toLowerCase().contains('.jpg') ||
+                url.toLowerCase().contains('.jpeg') ||
+                url.toLowerCase().contains('.png') ||
+                url.toLowerCase().contains('.webp');
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: GestureDetector(
+                onTap: isImage ? () => _showImagePreview(context, url) : null,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: isImage
+                      ? Image.network(
+                          url,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: Colors.grey.shade200,
+                            width: 70,
+                            height: 70,
+                            child: const Icon(Icons.broken_image, size: 24),
+                          ),
+                        )
+                      : Container(
+                          width: 70,
+                          height: 70,
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          padding: const EdgeInsets.all(4),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.insert_drive_file, size: 24),
+                              const SizedBox(height: 2),
+                              Text(
+                                url.split('/').last,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 9),
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
   String _serviceCategoryFromForum(String category) {
     switch (category) {
       case 'weather':
@@ -139,7 +232,6 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
         setState(() {
           _checkingRole = false;
           _isAdmin = false;
-          _isProvider = false;
         });
       }
       return;
@@ -154,17 +246,10 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
 
       final role = profile?['role']?.toString().trim().toLowerCase();
 
-      final providerRow = await supabase
-          .from('providers')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
       if (!mounted) return;
 
       setState(() {
         _isAdmin = role == 'admin';
-        _isProvider = providerRow != null;
         _checkingRole = false;
       });
     } catch (error) {
@@ -172,7 +257,6 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
 
       setState(() {
         _isAdmin = false;
-        _isProvider = false;
         _checkingRole = false;
         _listMessage = AppLocalizations.of(context)!.couldNotVerifyRole(error.toString());
       });
@@ -222,33 +306,32 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     }
   }
 
-  Future<void> _handleAttachFile() async {
-    setState(() => _isUploadingAttachment = true);
-    try {
-      final bookingService = BookingService();
-      final url = await bookingService.pickAndUploadAttachment();
-      if (!mounted) return;
-      setState(() {
-        _uploadedAttachmentUrl = url;
-      });
-      if (url != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Attachment uploaded successfully!')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload attachment: $e')),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isUploadingAttachment = false);
-      }
+  /// Uploads binary bytes of selected files to Supabase Storage bucket
+  Future<List<String>> _uploadAttachments() async {
+    final List<String> uploadedUrls = [];
+
+    for (final file in _selectedFiles) {
+      final bytes = file.bytes;
+      if (bytes == null) continue;
+
+      final String ext = file.extension ?? 'bin';
+      final String fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
+      final String path = 'booking_attachments/$fileName';
+
+      await supabase.storage.from('community_media').uploadBinary(
+            path,
+            bytes,
+            fileOptions: FileOptions(contentType: 'image/$ext'),
+          );
+
+      final publicUrl = supabase.storage.from('community_media').getPublicUrl(path);
+      uploadedUrls.add(publicUrl);
     }
+
+    return uploadedUrls;
   }
 
-  Future<void> _submitBooking() async {
+ Future<void> _submitBooking() async {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
@@ -274,25 +357,40 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     });
 
     try {
-      final bookingService = BookingService();
-      final insertedBooking = await bookingService.createBookingWithAttachment(
-        serviceType: _categoryController.text.trim(),
-        location: resolvedLocation,
-        notes: _detailsController.text.trim(),
-        preferredTime: _preferredTimeController.text.trim(),
-        forumPostId: widget.forumPostId,
-        attachmentUrl: _uploadedAttachmentUrl,
-      );
+      // Step 5 - Part A: Upload any attached files to Supabase Storage first
+      List<String> attachmentUrls = [];
+      if (_selectedFiles.isNotEmpty) {
+        attachmentUrls = await _uploadAttachments();
+      }
+
+      // Step 5 - Part B: Insert the booking record into Postgres along with the attachment URLs
+      final insertedBooking = await supabase
+          .from('bookings')
+          .insert({
+            'client_id': user.id,
+            'provider_id': null,
+            'service_type': _categoryController.text.trim(),
+            'forum_post_id': widget.forumPostId,
+            'status': 'pending',
+            'total_amount': 0,
+            'location': resolvedLocation,
+            'notes': _detailsController.text.trim(),
+            'preferred_time': _preferredTimeController.text.trim(),
+            'attachments': attachmentUrls, // Array of public URLs
+          })
+          .select()
+          .single();
 
       if (!mounted) return;
 
+      // Clear all form inputs and selected files after successful submission
       _categoryController.clear();
       _preferredTimeController.clear();
       _detailsController.clear();
       _customLocationController.clear();
       setState(() {
         _selectedLocation = null;
-        _uploadedAttachmentUrl = null;
+        _selectedFiles = []; // Reset selected files list
       });
 
       setState(() {
@@ -300,6 +398,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
         _isFormError = false;
       });
 
+      // Refresh local bookings list
       await _loadMyBookings();
     } catch (error) {
       if (!mounted) return;
@@ -361,8 +460,6 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     switch (status) {
       case 'pending':
         return L.statusPending;
-      case 'quoted':
-        return 'Quoted';
       case 'assigned':
         return L.statusAssigned;
       case 'in_progress':
@@ -428,7 +525,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
               ),
               const SizedBox(height: 16),
               
-              // Confined Location Selector Dropdown
+              // Location Selector Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedLocation,
                 decoration: const InputDecoration(
@@ -474,7 +571,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
               ],
               const SizedBox(height: 16),
 
-              // Option 2: Preferred Time Field with Quick Presets
+              // Preferred Time Field with Quick Presets
               TextFormField(
                 controller: _preferredTimeController,
                 decoration: InputDecoration(
@@ -513,7 +610,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
 
               TextFormField(
                 controller: _detailsController,
-                maxLines: 5,
+                maxLines: 4,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.describeIssueLabel,
                   hintText: AppLocalizations.of(context)!.describeIssueHint,
@@ -526,78 +623,18 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // File Attachment Section with Preview & Status
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _isUploadingAttachment ? null : _handleAttachFile,
-                        icon: _isUploadingAttachment
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Icon(Icons.attach_file),
-                        label: Text(
-                          _isUploadingAttachment ? 'Uploading...' : 'Attach Photo or PDF',
-                        ),
-                      ),
-                      if (_uploadedAttachmentUrl != null) ...[
-                        const SizedBox(width: 12),
-                        TextButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _uploadedAttachmentUrl = null;
-                            });
-                          },
-                          icon: const Icon(Icons.close, size: 16, color: Colors.red),
-                          label: const Text('Remove', style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Tip: Please avoid uploading photos containing personal IDs, keys, or private documents.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  if (_isUploadingAttachment) ...[
-                    const SizedBox(height: 8),
-                    const LinearProgressIndicator(),
-                  ],
-                  if (_uploadedAttachmentUrl != null) ...[
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        border: Border.all(color: Colors.green.shade200),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.green, size: 18),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'File attached: ${_uploadedAttachmentUrl!.split('/').last}',
-                              style: const TextStyle(fontSize: 12, color: Colors.green),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
+              // Multi-File Attachment Widget
+              MultiFileUploadWidget(
+                onFilesSelected: (files) {
+                  setState(() {
+                    _selectedFiles = files;
+                  });
+                },
               ),
-              const SizedBox(height: 24),
 
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
@@ -636,7 +673,7 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
     );
   }
 
- Widget _buildBookingList() {
+  Widget _buildBookingList() {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -707,7 +744,19 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
                   final amount =
                       booking['total_amount']?.toString() ?? '0';
 
-                  final attachmentUrl = booking['attachment_url']?.toString();
+                  // Parse attachment array (handles List<dynamic>, JSON string, or null)
+    List<String> attachments = [];
+    final rawAttachments = booking['attachments'];
+    if (rawAttachments is List) {
+      attachments = rawAttachments.map((e) => e.toString()).toList();
+    } else if (rawAttachments is String && rawAttachments.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawAttachments);
+        if (decoded is List) {
+          attachments = decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+    }
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -733,133 +782,9 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
                               Text(AppLocalizations.of(context)!.locationValue(location)),
                               Text(AppLocalizations.of(context)!.preferredTimeValue(preferredTime)),
                               Text(AppLocalizations.of(context)!.estimatedAmountValue(amount)),
-                              if (notes.isNotEmpty && status != 'quoted') ...[
+                              if (notes.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(AppLocalizations.of(context)!.notesValue(notes)),
-                              ],
-                              
-                              // Incoming Quote Review Card for Clients when status == 'quoted'
-                              if (status == 'quoted') ...[
-                                const SizedBox(height: 8),
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber.shade50,
-                                    border: Border.all(color: Colors.amber.shade300),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Incoming Quote: \$$amount CAD',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.brown,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      if (notes.isNotEmpty) ...[
-                                        const SizedBox(height: 4),
-                                        Text('Provider Remarks: $notes', style: const TextStyle(fontSize: 13)),
-                                      ],
-                                      const SizedBox(height: 10),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: [
-                                          ElevatedButton.icon(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.green,
-                                              foregroundColor: Colors.white,
-                                              minimumSize: const Size(0, 36),
-                                            ),
-                                            icon: const Icon(Icons.check, size: 16),
-                                            label: const Text('Accept Quote'),
-                                            onPressed: () async {
-                                              try {
-                                                final bookingService = BookingService();
-                                                await bookingService.updateBookingStatus(
-                                                  booking['id'].toString(),
-                                                  'in_progress',
-                                                );
-                                                await _loadMyBookings();
-                                                if (!mounted) return;
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Quote accepted! Job is now in progress.')),
-                                                );
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Error: $e')),
-                                                );
-                                              }
-                                            },
-                                          ),
-                                          OutlinedButton.icon(
-                                            style: OutlinedButton.styleFrom(
-                                              foregroundColor: Colors.red,
-                                              minimumSize: const Size(0, 36),
-                                            ),
-                                            icon: const Icon(Icons.close, size: 16),
-                                            label: const Text('Reject'),
-                                            onPressed: () async {
-                                              try {
-                                                final bookingService = BookingService();
-                                                await bookingService.updateBookingStatus(
-                                                  booking['id'].toString(),
-                                                  'pending',
-                                                );
-                                                await _loadMyBookings();
-                                                if (!mounted) return;
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Quote rejected.')),
-                                                );
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Error: $e')),
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-
-                              if (attachmentUrl != null && attachmentUrl.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                InkWell(
-                                  onTap: () async {
-                                    final uri = Uri.tryParse(attachmentUrl);
-                                    if (uri != null) {
-                                      if (await canLaunchUrl(uri)) {
-                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
-                                      } else {
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Could not launch attachment URL.')),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(Icons.attachment, size: 14, color: Colors.blue),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'View Attachment',
-                                        style: TextStyle(
-                                          color: Colors.blue.shade700,
-                                          fontSize: 12,
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                               ],
                             ],
                           ),
@@ -872,7 +797,6 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
                           ),
                           backgroundColor: switch (status) {
                             'pending' => Colors.orange.shade100,
-                            'quoted' => Colors.amber.shade100,
                             'assigned' => Colors.blue.shade100,
                             'in_progress' => Colors.purple.shade100,
                             'completed' => Colors.green.shade100,
@@ -923,12 +847,11 @@ class _ServicesBookingPageState extends State<ServicesBookingPage> {
               icon: const Icon(Icons.admin_panel_settings),
               tooltip: AppLocalizations.of(context)!.adminPortalTooltip,
             ),
-          if (_isProvider)
-            IconButton(
-              onPressed: _openProviderPortal,
-              icon: const Icon(Icons.engineering),
-              tooltip: AppLocalizations.of(context)!.providerPortalTooltip,
-            ),
+          IconButton(
+            onPressed: _openProviderPortal,
+            icon: const Icon(Icons.engineering),
+            tooltip: AppLocalizations.of(context)!.providerPortalTooltip,
+          ),
           IconButton(
             tooltip: AppLocalizations.of(context)!.communityForumTooltip,
             icon: const Icon(Icons.forum_outlined),

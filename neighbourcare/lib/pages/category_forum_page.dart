@@ -781,6 +781,99 @@ class _PostCardState extends State<_PostCard> {
     }
   }
 
+  /// Helper to display full-size image modal when thumbnail is tapped
+  void _showImagePreview(BuildContext context, String url) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              InteractiveViewer(
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAttachments(List<String> attachments) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 110,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: attachments.length,
+            itemBuilder: (context, index) {
+              final url = attachments[index];
+              final isImage = url.toLowerCase().contains('.jpg') ||
+                  url.toLowerCase().contains('.jpeg') ||
+                  url.toLowerCase().contains('.png') ||
+                  url.toLowerCase().contains('.webp');
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: GestureDetector(
+                  onTap: isImage ? () => _showImagePreview(context, url) : null,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: isImage
+                        ? Image.network(
+                            url,
+                            width: 110,
+                            height: 110,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: Colors.grey.shade200,
+                              width: 110,
+                              height: 110,
+                              child: const Icon(Icons.broken_image),
+                            ),
+                          )
+                        : Container(
+                            width: 110,
+                            height: 110,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            padding: const EdgeInsets.all(8),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.insert_drive_file, size: 32),
+                                const SizedBox(height: 4),
+                                Text(
+                                  url.split('/').last,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildReplies(AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
     final items = snapshot.data ?? const [];
 
@@ -843,7 +936,7 @@ class _PostCardState extends State<_PostCard> {
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.writeAReplyHint,
                   isDense: true,
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 minLines: 1,
                 maxLines: 3,
@@ -871,6 +964,20 @@ class _PostCardState extends State<_PostCard> {
     final post = widget.post;
     final categoryName = (post['category'] ?? 'community').toString().replaceAll('_', ' ');
     final alertName = (post['alert_type'] ?? categoryName).toString().replaceAll('_', ' ');
+
+    // Extract attachments (handles JSON string, List<dynamic>, or null)
+    List<String> attachments = [];
+    final rawAttachments = post['attachments'];
+    if (rawAttachments is List) {
+      attachments = rawAttachments.map((e) => e.toString()).toList();
+    } else if (rawAttachments is String && rawAttachments.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawAttachments);
+        if (decoded is List) {
+          attachments = decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+    }
 
     return Card(
       child: Padding(
@@ -900,6 +1007,10 @@ class _PostCardState extends State<_PostCard> {
             ),
             const SizedBox(height: 8),
             Text(post['content'] ?? ''),
+
+            // Attachment Thumbnails List
+            if (attachments.isNotEmpty) _buildAttachments(attachments),
+
             const SizedBox(height: 12),
             Text(
               AppLocalizations.of(context)!.postedOn((post['created_at'] ?? '').toString()),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/locale_provider.dart';
@@ -37,7 +38,7 @@ class _AdminPortalPageState extends State<AdminPortalPage> {
     });
 
     try {
-      // Bookings query
+      // Bookings query including attachments column
       var bookingsQuery = supabase
           .from('bookings')
           .select('''
@@ -50,6 +51,7 @@ class _AdminPortalPageState extends State<AdminPortalPage> {
             notes,
             status,
             total_amount,
+            attachments,
             created_at
           ''')
           .order('created_at', ascending: false);
@@ -67,6 +69,7 @@ class _AdminPortalPageState extends State<AdminPortalPage> {
               notes,
               status,
               total_amount,
+              attachments,
               created_at
             ''')
             .eq('status', statusFilter)
@@ -102,60 +105,157 @@ class _AdminPortalPageState extends State<AdminPortalPage> {
     }
   }
 
-Future<void> assignProvider(String bookingId, String? providerId) async {
-  if (providerId == null) return;
-
-  try {
-    await supabase
-        .from('bookings')
-        .update({
-          'provider_id': providerId,
-          'status': 'assigned',
-        })
-        .eq('id', bookingId);
-
-    setState(() {
-      message = AppLocalizations.of(context)!.bookingAssignedToProvider;
-    });
-
-    await loadAdminData();
-  } catch (error) {
-    setState(() {
-      message = AppLocalizations.of(context)!.couldNotAssignProvider(error.toString());
-    });
+  void _showImagePreview(BuildContext context, String url) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              InteractiveViewer(
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
-}
 
-Future<void> setProviderVerification(
-  String providerId,
-  bool verified,
-) async {
-  try {
-    await supabase
-        .from('providers')
-        .update({
-          'pvsc_verified': verified,
-        })
-        .eq('id', providerId);
+  Widget _buildAdminAttachments(BuildContext context, List<String> attachments) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          'Attachments (${attachments.length}):',
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 70,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: attachments.length,
+            itemBuilder: (context, index) {
+              final url = attachments[index];
+              final isImage = url.toLowerCase().contains('.jpg') ||
+                  url.toLowerCase().contains('.jpeg') ||
+                  url.toLowerCase().contains('.png') ||
+                  url.toLowerCase().contains('.webp');
 
-    if (!mounted) return;
-
-    setState(() {
-      message = verified
-          ? AppLocalizations.of(context)!.providerApprovedSuccess
-          : AppLocalizations.of(context)!.providerVerificationRemoved;
-    });
-
-    await loadAdminData();
-  } catch (error) {
-    if (!mounted) return;
-
-    setState(() {
-      message = AppLocalizations.of(context)!.couldNotUpdateProviderVerification(error.toString());
-    });
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: GestureDetector(
+                  onTap: isImage ? () => _showImagePreview(context, url) : null,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: isImage
+                        ? Image.network(
+                            url,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: Colors.grey.shade200,
+                              width: 70,
+                              height: 70,
+                              child: const Icon(Icons.broken_image, size: 24),
+                            ),
+                          )
+                        : Container(
+                            width: 70,
+                            height: 70,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            padding: const EdgeInsets.all(4),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.insert_drive_file, size: 24),
+                                const SizedBox(height: 2),
+                                Text(
+                                  url.split('/').last,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 9),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
-}
 
+  Future<void> assignProvider(String bookingId, String? providerId) async {
+    if (providerId == null) return;
+
+    try {
+      await supabase
+          .from('bookings')
+          .update({
+            'provider_id': providerId,
+            'status': 'assigned',
+          })
+          .eq('id', bookingId);
+
+      setState(() {
+        message = AppLocalizations.of(context)!.bookingAssignedToProvider;
+      });
+
+      await loadAdminData();
+    } catch (error) {
+      setState(() {
+        message = AppLocalizations.of(context)!.couldNotAssignProvider(error.toString());
+      });
+    }
+  }
+
+  Future<void> setProviderVerification(
+    String providerId,
+    bool verified,
+  ) async {
+    try {
+      await supabase
+          .from('providers')
+          .update({
+            'pvsc_verified': verified,
+          })
+          .eq('id', providerId);
+
+      if (!mounted) return;
+
+      setState(() {
+        message = verified
+            ? AppLocalizations.of(context)!.providerApprovedSuccess
+            : AppLocalizations.of(context)!.providerVerificationRemoved;
+      });
+
+      await loadAdminData();
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        message = AppLocalizations.of(context)!.couldNotUpdateProviderVerification(error.toString());
+      });
+    }
+  }
 
   Future<void> updateBookingStatus(String bookingId, String newStatus) async {
     try {
@@ -257,6 +357,20 @@ Future<void> setProviderVerification(
     final amount = booking['total_amount']?.toString() ?? '0';
     final notes = booking['notes']?.toString() ?? '';
 
+    // Extract and parse raw attachments safely
+    List<String> attachments = [];
+    final rawAttachments = booking['attachments'];
+    if (rawAttachments is List) {
+      attachments = rawAttachments.map((e) => e.toString()).toList();
+    } else if (rawAttachments is String && rawAttachments.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawAttachments);
+        if (decoded is List) {
+          attachments = decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -286,6 +400,11 @@ Future<void> setProviderVerification(
               const SizedBox(height: 6),
               Text(AppLocalizations.of(context)!.notesValue(notes)),
             ],
+
+            // Display uploaded attachment thumbnails if present
+            if (attachments.isNotEmpty)
+              _buildAdminAttachments(context, attachments),
+
             const SizedBox(height: 12),
 
             // Provider assignment
@@ -491,80 +610,79 @@ Future<void> setProviderVerification(
                           child: Text(message),
                         ),
                       Text(
-  AppLocalizations.of(context)!.providerApprovalTitle,
-  style: TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-  ),
-),
-const SizedBox(height: 12),
+                        AppLocalizations.of(context)!.providerApprovalTitle,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
 
-if (providers.isEmpty)
-  Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Text(AppLocalizations.of(context)!.noProviderApplicationsFound),
-    ),
-  )
-else
-  Card(
-    child: Column(
-      children: providers.map((provider) {
-        final providerId = provider['provider_id'].toString();
-        final verified = provider['pvsc_verified'] == true;
+                      if (providers.isEmpty)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(AppLocalizations.of(context)!.noProviderApplicationsFound),
+                          ),
+                        )
+                      else
+                        Card(
+                          child: Column(
+                            children: providers.map((provider) {
+                              final providerId = provider['provider_id'].toString();
+                              final verified = provider['pvsc_verified'] == true;
 
-        final firstName =
-            provider['first_name']?.toString().trim() ?? '';
-        final lastName =
-            provider['last_name']?.toString().trim() ?? '';
-        final email = provider['email']?.toString().trim() ?? '';
+                              final firstName =
+                                  provider['first_name']?.toString().trim() ?? '';
+                              final lastName =
+                                  provider['last_name']?.toString().trim() ?? '';
+                              final email = provider['email']?.toString().trim() ?? '';
 
-        final name = [firstName, lastName]
-            .where((part) => part.isNotEmpty)
-            .join(' ');
+                              final name = [firstName, lastName]
+                                  .where((part) => part.isNotEmpty)
+                                  .join(' ');
 
-        final displayName = name.isNotEmpty
-            ? name
-            : (email.isNotEmpty ? email : AppLocalizations.of(context)!.providerIdFallback(providerId));
+                              final displayName = name.isNotEmpty
+                                  ? name
+                                  : (email.isNotEmpty ? email : AppLocalizations.of(context)!.providerIdFallback(providerId));
 
-        return ListTile(
-          leading: CircleAvatar(
-            child: Icon(
-              verified ? Icons.verified : Icons.pending_actions,
-            ),
-          ),
-          title: Text(displayName),
-          subtitle: Text(
-            email.isEmpty ? AppLocalizations.of(context)!.noEmailAvailable : email,
-          ),
-          trailing: FilledButton(
-            onPressed: () => setProviderVerification(
-              providerId,
-              !verified,
-            ),
-            style: FilledButton.styleFrom(
-              backgroundColor: verified
-                  ? Colors.red.shade700
-                  : Colors.green.shade700,
-            ),
-            child: Text(verified ? AppLocalizations.of(context)!.suspendButton : AppLocalizations.of(context)!.approveButton),
-          ),
-        );
-      }).toList(),
-    ),
-  ),
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: Icon(
+                                    verified ? Icons.verified : Icons.pending_actions,
+                                  ),
+                                ),
+                                title: Text(displayName),
+                                subtitle: Text(
+                                  email.isEmpty ? AppLocalizations.of(context)!.noEmailAvailable : email,
+                                ),
+                                trailing: FilledButton(
+                                  onPressed: () => setProviderVerification(
+                                    providerId,
+                                    !verified,
+                                  ),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: verified
+                                        ? Colors.red.shade700
+                                        : Colors.green.shade700,
+                                  ),
+                                  child: Text(verified ? AppLocalizations.of(context)!.suspendButton : AppLocalizations.of(context)!.approveButton),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
 
-const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-const SizedBox(height: 24),
-Text(
-  AppLocalizations.of(context)!.bookingsTitle,
-  style: TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-  ),
-),
-const SizedBox(height: 12),
+                      Text(
+                        AppLocalizations.of(context)!.bookingsTitle,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       ...allBookings.map(bookingRow),
                     ],
                   ),

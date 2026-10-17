@@ -1,13 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/auth_service.dart'; // Adjust path if auth_service.dart is located elsewhere
 
 final supabase = Supabase.instance.client;
 
 class AuthService extends ChangeNotifier {
   Session? _session;
   bool _isAdmin = false;
-  bool _isProvider = false;
   bool _loading = true;
   String? _error;
   String? _loginName;
@@ -15,7 +13,6 @@ class AuthService extends ChangeNotifier {
 
   Session? get session => _session;
   bool get isAdmin => _isAdmin;
-  bool get isProvider => _isProvider;
   bool get loading => _loading;
   String? get error => _error;
 
@@ -25,11 +22,15 @@ class AuthService extends ChangeNotifier {
       _loginName ?? _session?.user.userMetadata?['login_name']?.toString();
   int get goldPoint => _goldPoint;
 
+  String? _userRole; // e.g., 'provider', 'admin', 'client'
+
+  bool get isProvider => _userRole?.toLowerCase() == 'provider';
+
   AuthService() {
     _init();
   }
 
- Future<void> _init() async {
+  void _init() {
     supabase.auth.onAuthStateChange.listen(
       _onAuthChanged,
       onError: (error, stackTrace) {
@@ -40,31 +41,17 @@ class AuthService extends ChangeNotifier {
       },
     );
 
-_session = supabase.auth.currentSession;
-    if (_session != null) {
-      await _loadAdminStatus();
-      await _loadProviderStatus();
-      await _loadUserDataAndCheckDailyLogin();
-    } else {
-      _isAdmin = false;
-      _isProvider = false;
-    }
+    _session = supabase.auth.currentSession;
+    _loadAdminStatus();
+    _loadUserDataAndCheckDailyLogin();
     _loading = false;
-    notifyListeners(); // Ensures UI catches final state
+    notifyListeners();
   }
 
-Future<void> _onAuthChanged(AuthState authState) async {
+  Future<void> _onAuthChanged(AuthState authState) async {
     _session = authState.session;
-    if (_session == null) {
-      _isAdmin = false;
-      _isProvider = false;
-      _loginName = null;
-      _goldPoint = 0;
-    } else {
-      await _loadAdminStatus();
-      await _loadProviderStatus();
-      await _loadUserDataAndCheckDailyLogin();
-    }
+    await _loadAdminStatus();
+    await _loadUserDataAndCheckDailyLogin();
     notifyListeners();
   }
 
@@ -72,7 +59,6 @@ Future<void> _onAuthChanged(AuthState authState) async {
     if (_session == null) {
       _loginName = null;
       _goldPoint = 0;
-      _isProvider = false;
       return;
     }
 
@@ -114,31 +100,6 @@ Future<void> _onAuthChanged(AuthState authState) async {
     }
   }
 
-Future<void> _loadProviderStatus() async {
-    if (_session == null) {
-      _isProvider = false;
-      return;
-    }
-
-    try {
-      // Assuming you have a table or column tracking providers, 
-      // e.g., a 'providers' table or a role check similar to admin_roles:
-      final row = await supabase
-          .from('providers') // or your relevant provider table/query
-          .select('user_id')
-          .eq('user_id', _session!.user.id)
-          .maybeSingle();
-
-      _isProvider = row != null;
-      debugPrint('Provider status loaded for ${_session!.user.id}: $_isProvider');
-    } catch (e) {
-      debugPrint('Failed to load provider status: $e');
-      _isProvider = false;
-    }
-    notifyListeners(); // Force UI update as soon as provider check resolves
-  }
-  
-  
   /// Rule 1: Daily Login (+2 Gold)
   Future<void> claimDailyLogin() async {
     if (_session == null) return;

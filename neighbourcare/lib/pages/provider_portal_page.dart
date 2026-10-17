@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/locale_provider.dart';
 import '../services/font_size_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/top_banner_widget.dart';
 import '../l10n/app_localizations.dart';
@@ -115,6 +115,104 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
     }
   }
 
+  void _showImagePreview(BuildContext context, String url) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              InteractiveViewer(
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProviderAttachments(BuildContext context, List<String> attachments) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          'Client Attachments (${attachments.length}):',
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 80,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: attachments.length,
+            itemBuilder: (context, index) {
+              final url = attachments[index];
+              final isImage = url.toLowerCase().contains('.jpg') ||
+                  url.toLowerCase().contains('.jpeg') ||
+                  url.toLowerCase().contains('.png') ||
+                  url.toLowerCase().contains('.webp');
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: GestureDetector(
+                  onTap: isImage ? () => _showImagePreview(context, url) : null,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: isImage
+                        ? Image.network(
+                            url,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: Colors.grey.shade200,
+                              width: 80,
+                              height: 80,
+                              child: const Icon(Icons.broken_image, size: 24),
+                            ),
+                          )
+                        : Container(
+                            width: 80,
+                            height: 80,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            padding: const EdgeInsets.all(4),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.insert_drive_file, size: 24),
+                                const SizedBox(height: 2),
+                                Text(
+                                  url.split('/').last,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 9),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _claimJob(String bookingId) async {
     if (_providerId == null || _isClaiming) return;
 
@@ -197,79 +295,11 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
     }
   }
 
-  void _showQuotationDialog(BuildContext context, String bookingId) {
-    final amountController = TextEditingController();
-    final remarksController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Submit Job Quotation'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Quoted Amount (\$ CAD)'),
-                validator: (v) => v == null || double.tryParse(v) == null ? 'Enter valid amount' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: remarksController,
-                maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Provider Remarks / Terms'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Enter remarks' : null,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                try {
-                  await supabase.from('bookings').update({
-                    'provider_id': _providerId,
-                    'total_amount': double.parse(amountController.text.trim()),
-                    'notes': remarksController.text.trim(),
-                    'status': 'quoted',
-                  }).eq('id', bookingId);
-
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Quotation submitted successfully!')),
-                  );
-                  await _loadPortal();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
-              }
-            },
-            child: const Text('Send Quote'),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _statusLabel(BuildContext context, String status) {
     final l = AppLocalizations.of(context)!;
     switch (status) {
       case 'pending':
         return l.statusPending;
-      case 'quoted':
-        return 'Quoted';
       case 'assigned':
         return l.statusAssigned;
       case 'in_progress':
@@ -290,7 +320,20 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
     final time = job['preferred_time']?.toString() ?? AppLocalizations.of(context)!.notProvided;
     final notes = job['notes']?.toString() ?? '';
     final status = job['status']?.toString() ?? 'pending';
-    final attachmentUrl = job['attachment_url']?.toString();
+
+    // Step 3: Extract and parse attachments from booking record
+    List<String> attachments = [];
+    final rawAttachments = job['attachments'];
+    if (rawAttachments is List) {
+      attachments = rawAttachments.map((e) => e.toString()).toList();
+    } else if (rawAttachments is String && rawAttachments.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawAttachments);
+        if (decoded is List) {
+          attachments = decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+    }
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -314,36 +357,11 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
               const SizedBox(height: 8),
               Text(AppLocalizations.of(context)!.notesValue(notes)),
             ],
-            if (attachmentUrl != null && attachmentUrl.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: () async {
-                  final uri = Uri.parse(attachmentUrl);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not open attachment link.')),
-                    );
-                  }
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.attachment, size: 16, color: Colors.blue),
-                    const SizedBox(width: 4),
-                    Text(
-                      'View Client Attachment (Photo/PDF)',
-                      style: TextStyle(
-                        color: Colors.blue.shade700,
-                        decoration: TextDecoration.underline,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+
+            // Render uploaded client attachments if present
+            if (attachments.isNotEmpty)
+              _buildProviderAttachments(context, attachments),
+
             const SizedBox(height: 14),
             action,
           ],
@@ -351,6 +369,7 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
       ),
     );
   }
+
   Widget _openJobSection() {
     return Card(
       child: Padding(
@@ -382,25 +401,14 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
 
                   return _jobCard(
                     job,
-                    action: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton.icon(
-                          onPressed: _isClaiming
-                              ? null
-                              : () => _claimJob(job['id'].toString()),
-                          icon: const Icon(Icons.handshake),
-                          label: Text(
-                            _isClaiming ? AppLocalizations.of(context)!.claimingEllipsis : AppLocalizations.of(context)!.claimJobButton,
-                          ),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () => _showQuotationDialog(context, job['id'].toString()),
-                          icon: const Icon(Icons.request_quote),
-                          label: const Text('Submit Quote'),
-                        ),
-                      ],
+                    action: FilledButton.icon(
+                      onPressed: _isClaiming
+                          ? null
+                          : () => _claimJob(job['id'].toString()),
+                      icon: const Icon(Icons.handshake),
+                      label: Text(
+                        _isClaiming ? AppLocalizations.of(context)!.claimingEllipsis : AppLocalizations.of(context)!.claimJobButton,
+                      ),
                     ),
                   );
                 },
@@ -443,12 +451,6 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        if (status == 'assigned' || status == 'quoted')
-                          OutlinedButton.icon(
-                            onPressed: () => _showQuotationDialog(context, job['id'].toString()),
-                            icon: const Icon(Icons.edit_note),
-                            label: const Text('Update Quote'),
-                          ),
                         if (status == 'assigned')
                           OutlinedButton(
                             onPressed: () => _updateStatus(
@@ -457,7 +459,7 @@ class _ProviderPortalPageState extends State<ProviderPortalPage> {
                             ),
                             child: Text(AppLocalizations.of(context)!.startJobButton),
                           ),
-                        if (status == 'assigned' || status == 'in_progress' || status == 'quoted')
+                        if (status == 'assigned' || status == 'in_progress')
                           FilledButton(
                             onPressed: () => _updateStatus(
                               job['id'].toString(),

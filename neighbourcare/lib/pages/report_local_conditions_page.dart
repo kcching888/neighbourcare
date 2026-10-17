@@ -7,6 +7,10 @@ import '../l10n/app_localizations.dart';
 
 import '../widgets/top_banner_widget.dart';
 
+import 'package:file_picker/file_picker.dart';
+import '../widgets/multi_file_upload_widget.dart';
+
+
 class ReportLocalConditionsPage extends StatefulWidget {
   final String initialCategory;
 
@@ -32,6 +36,9 @@ final _categories = const [
   'dining',
   'diy',
 ];
+
+List<PlatformFile> _selectedFiles = [];
+  bool _isSubmitting = false;
 
   late String _selectedCategory;
   bool _isPublishing = false;
@@ -88,6 +95,35 @@ final _categories = const [
       if (mounted) setState(() => _isPublishing = false);
     }
   }
+
+Future<List<String>> _uploadAttachments() async {
+  final List<String> uploadedUrls = [];
+  final supabase = Supabase.instance.client;
+
+  for (final file in _selectedFiles) {
+    final bytes = file.bytes;
+    if (bytes == null) continue;
+
+    final String ext = file.extension ?? 'jpg';
+    final String fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
+    final String path = 'forum_attachments/$fileName';
+
+    // 1. Upload binary payload
+    await supabase.storage.from('community_media').uploadBinary(
+          path,
+          bytes,
+          fileOptions: FileOptions(contentType: 'image/$ext'),
+        );
+
+    // 2. Retrieve public URL
+    final String publicUrl =
+        supabase.storage.from('community_media').getPublicUrl(path);
+
+    uploadedUrls.add(publicUrl);
+  }
+
+  return uploadedUrls;
+}
 
   @override
   Widget build(BuildContext context) {
